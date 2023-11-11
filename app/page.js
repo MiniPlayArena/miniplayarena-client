@@ -5,6 +5,7 @@ import {
   Input,
   InputGroup,
   InputRightElement,
+  SimpleGrid,
   Text,
 } from '@chakra-ui/react'
 import { Center, useToast } from '@chakra-ui/react'
@@ -13,6 +14,7 @@ import { useEffect, useState } from 'react'
 import { Index } from './index'
 import { StyledButton } from './components/button'
 import { io } from 'socket.io-client'
+import { UserIcon } from './components/userIcon'
 
 const URL = 'http://143.167.68.112:696/'
 
@@ -249,19 +251,20 @@ export default function Home() {
         </InputGroup>
       ) : (
         <>
-          <Text>Hello {username}</Text>
           {party !== null ? (
             <>
               <Text>Party ID: {party.partyId}</Text>
               <Text>Players:</Text>
+              <SimpleGrid columns='2' spacing='2.5'>
               {Object.keys(party.players).map((playerId) => {
                 let isLeader = party.partyLeader === playerId
                 return (
-                  <Text key={playerId}>
-                    {party.players[playerId]} {isLeader && '👑'}
-                  </Text>
+                  <UserIcon key={playerId} leader={isLeader.toString()}>
+                  {party.players[playerId]}
+                </UserIcon>
                 )
               })}
+              </SimpleGrid>
 
               <ButtonGroup>
                 <StyledButton variant="styled_dark" bg='red.800' onClick={emitLeaveParty}>
