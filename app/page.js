@@ -1,18 +1,18 @@
 'use client'
 
+import {
+  ButtonGroup,
+  Input,
+  InputGroup,
+  InputRightElement,
+  Text,
+} from '@chakra-ui/react'
 import { Center, useToast } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
 
-import {
-  Text,
-  Input,
-  ButtonGroup,
-  InputGroup,
-  InputRightElement,
-} from '@chakra-ui/react'
 import { Index } from './index'
-import { io } from 'socket.io-client'
 import { StyledButton } from './components/button'
+import { io } from 'socket.io-client'
 
 const URL = 'http://143.167.68.112:696/'
 
@@ -131,6 +131,7 @@ export default function Home() {
     }
 
     function onPartyCreated(data) {
+      console.log(data)
       setParty((prevState) => ({
         ...prevState,
         partyId: data.partyId,
@@ -140,6 +141,7 @@ export default function Home() {
     }
 
     function onJoinedParty(data) {
+      console.log(data)
       setParty((prevState) => ({
         ...prevState,
         partyId: data.partyId,
@@ -227,11 +229,11 @@ export default function Home() {
             <>
               <Text>Party ID: {party.partyId}</Text>
               <Text>Players:</Text>
-              {party.players.map((player) => {
-                let isLeader = party.partyLeader === player
+              {Object.keys(party.players).map((playerId) => {
+                let isLeader = party.partyLeader === playerId
                 return (
-                  <Text key={player}>
-                    {player} {isLeader && '👑'}
+                  <Text key={playerId}>
+                    {party.players[playerId]} {isLeader && '👑'}
                   </Text>
                 )
               })}
