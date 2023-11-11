@@ -15,7 +15,10 @@ export function VerticalCenteredModal(props) {
 
   return (
     <>
-      <StyledButton variant={props.variant} onClick={onOpen}> {props.buttonText} </StyledButton>
+      <StyledButton variant={props.variant} onClick={onOpen}>
+        {' '}
+        {props.buttonText}{' '}
+      </StyledButton>
 
       <Modal
         onClose={onClose}
@@ -24,16 +27,16 @@ export function VerticalCenteredModal(props) {
         isCentered
         variant={'styled'}
       >
-        <ModalOverlay
-        />
-        <ModalContent>  
+        <ModalOverlay />
+        <ModalContent>
           <ModalHeader> {props.heading} </ModalHeader>
           <ModalCloseButton />
-          <ModalBody>
-            {props.children}
-          </ModalBody>
+          <ModalBody>{props.children}</ModalBody>
           <ModalFooter>
-            <StyledButton variant='styled_light' onClick={onClose}> Close </StyledButton>
+            <StyledButton variant="styled_light" onClick={onClose}>
+              {' '}
+              Close{' '}
+            </StyledButton>
             {props.functionButton}
           </ModalFooter>
         </ModalContent>

@@ -26,6 +26,6 @@ export const theme = extendTheme({
   colors,
   components: {
     Button: buttonTheme,
-    Modal: modalTheme
+    Modal: modalTheme,
   },
 })
