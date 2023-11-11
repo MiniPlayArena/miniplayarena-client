@@ -1,48 +1,48 @@
 'use client';
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react';
 
-import { io } from 'socket.io-client'
+import { io } from 'socket.io-client';
 
-const URL = 'http://143.167.68.112:696/'
+const URL = 'http://143.167.68.112:696/';
 
 export default function Home() {
-  const [socket, setSocket] = useState()
-  const [isConnected, setIsConnected] = useState(false)
-  const [clientId, setClientId] = useState()
-  const [username, setUsername] = useState('Kush')
+  const [socket, setSocket] = useState();
+  const [isConnected, setIsConnected] = useState(false);
+  const [clientId, setClientId] = useState();
+  const [username, setUsername] = useState('Kush');
 
   function connectToServer(e) {
-    e.preventDefault()
+    e.preventDefault();
     if (!socket) {
-      console.log('Socket not instantiated yet')
-      return
+      console.log('Socket not instantiated yet');
+      return;
     }
 
-    console.log('Connecting to socket')
-    socket.connect()
+    console.log('Connecting to socket');
+    socket.connect();
   }
 
   useEffect(() => {
-    console.log('Initalising socket')
-    const socket = io(URL, { autoConnect: false })
-    console.log('Socket successfully initialised')
-    setSocket(socket)
+    console.log('Initalising socket');
+    const socket = io(URL, { autoConnect: false });
+    console.log('Socket successfully initialised');
+    setSocket(socket);
 
     function onConnect(socket) {
       setIsConnected(true);
-      console.log(`Connected to server, client id: ${socket.id}`)
-      setClientId(socket.id)
+      console.log(`Connected to server, client id: ${socket.id}`);
+      setClientId(socket.id);
     }
 
     function onDisconnect() {
-      console.log('Disconnected from server')
+      console.log('Disconnected from server');
       setIsConnected(false);
-      setClientId(null)
+      setClientId(null);
     }
 
     function onFooEvent(value) {
-      setFooEvents(previous => [...previous, value]);
+      setFooEvents((previous) => [...previous, value]);
     }
 
     socket.on('connect', onConnect);
@@ -56,14 +56,15 @@ export default function Home() {
       socket.disconnect();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, []);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <form onSubmit={connectToServer}>
-        <label>Enter your name:
+        <label>
+          Enter your name:
           <input
-            className='text-black'
+            className="text-black"
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
