@@ -13,8 +13,8 @@ import { useEffect, useState } from 'react'
 
 import { Index } from './index'
 import { StyledButton } from './components/button'
-import { io } from 'socket.io-client'
 import { UserIcon } from './components/userIcon'
+import { io } from 'socket.io-client'
 
 const URL = 'http://143.167.68.112:696/'
 
@@ -26,6 +26,8 @@ export default function Home() {
   const [usernameAdded, setUsernameAdded] = useState(false)
   const [party, setParty] = useState(null)
   const [joinPartyId, setJoinPartyId] = useState('')
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [gameState, setGameState] = useState(null)
 
   const toast = useToast()
 
@@ -105,6 +107,8 @@ export default function Home() {
     const _socket = io(URL)
     setSocket(_socket)
 
+    var _partyId = ''
+
     function onConnect() {
       setIsConnected(true)
       console.log(`Connected to server, client id: ${_socket.id}`)
@@ -124,6 +128,7 @@ export default function Home() {
       setClientId(null)
       setUsernameAdded(false)
       setParty(null)
+      setIsPlaying(false)
       toast({
         title: 'Disconnected from server',
         status: 'info',
@@ -157,6 +162,7 @@ export default function Home() {
         partyLeader: data.partyLeader,
         players: data.players,
       }))
+      _partyId = data.partyId
     }
 
     function onJoinedParty(data) {
@@ -167,6 +173,8 @@ export default function Home() {
         partyLeader: data.partyLeader,
         players: data.players,
       }))
+      _partyId = data.partyId
+
       if (Object.keys(data.players).at(-1) === _socket.id) {
         toast({
           title: 'You joined the party!',
@@ -188,6 +196,7 @@ export default function Home() {
       if (data.players === null || !Object.keys(data.players === null ? [] : data.players).includes(_socket.id)) {
         setParty(null)
         setJoinPartyId('')
+        setIsPlaying(false)
       } else {
         setParty((prevState) => ({
           ...prevState,
@@ -199,6 +208,24 @@ export default function Home() {
 
     function onGameCreated(data) {
       console.log(data)
+      setIsPlaying(true)
+      setGameState((prevState) => ({
+        ...prevState,
+        gameId: data.gameId,
+        nextPlayer: data.next_player
+      }))
+
+      _socket.emit('get-game-state', { partyId: _partyId, clientId: _socket.id, gameId: 'uno' })
+    }
+
+    function onGameState(data) {
+      console.log(data)
+      setGameState((prevState) => ({
+        ...prevState,
+        currentFacingCard: data.c_facing_card,
+        currentHand: data.c_hand,
+        nextPlayer: data.next_player
+      }))
     }
 
     _socket.on('connect', onConnect)
@@ -209,6 +236,7 @@ export default function Home() {
     _socket.on('joined-party', onJoinedParty)
     _socket.on('left-party', onLeftParty)
     _socket.on('game-created', onGameCreated)
+    _socket.on('game-state', onGameState)
 
     return () => {
       _socket.off('connect', onConnect)
@@ -219,6 +247,7 @@ export default function Home() {
       _socket.off('joined-party', onJoinedParty)
       _socket.off('left-party', onLeftParty)
       _socket.off('game-created', onGameCreated)
+      _socket.off('game-state', onGameState)
       _socket.disconnect()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -256,14 +285,14 @@ export default function Home() {
               <Text>Party ID: {party.partyId}</Text>
               <Text>Players:</Text>
               <SimpleGrid columns='2' spacing='2.5'>
-              {Object.keys(party.players).map((playerId) => {
-                let isLeader = party.partyLeader === playerId
-                return (
-                  <UserIcon key={playerId} leader={isLeader.toString()}>
-                  {party.players[playerId]}
-                </UserIcon>
-                )
-              })}
+                {Object.keys(party.players).map((playerId) => {
+                  let isLeader = party.partyLeader === playerId
+                  return (
+                    <UserIcon key={playerId} leader={isLeader.toString()}>
+                      {party.players[playerId]}
+                    </UserIcon>
+                  )
+                })}
               </SimpleGrid>
 
               <ButtonGroup>
@@ -283,7 +312,7 @@ export default function Home() {
                 maxW='16rem'
                 value={joinPartyId}
                 variant="styled"
-                onChange={(e) => setJoinPartyId(e.target.value)}
+                onChange={(e) => setJoinPartyId(e.target.value.toUpperCase())}
                 placeholder="enter party code"
                 bg="silver.100"
                 color="violet.100"
@@ -291,11 +320,9 @@ export default function Home() {
 
               <ButtonGroup>
                 <StyledButton variant="styled_dark" onClick={emitJoinParty}>
-                  {' '}
                   Join Party
                 </StyledButton>
                 <StyledButton variant="styled_light" onClick={emitCreateParty}>
-                  {' '}
                   Create Party
                 </StyledButton>
               </ButtonGroup>
