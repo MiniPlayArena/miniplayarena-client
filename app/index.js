@@ -7,8 +7,13 @@ const backgroundUrl = '' //https://i.pinimg.com/originals/6f/c3/07/6fc307f1950ce
 
 export function Index({ children }) {
   return (
-     <Container minH={'calc(100vh)'} minW={'calc(100vw)'} bg="salmon.100">
-      <StyledButton>Hello World!</StyledButton>
+    <Container
+      minH={'calc(100vh)'}
+      minW={'calc(100vw)'}
+      bg='salmon.100'>
+      <StyledButton>
+        Hello World!
+      </StyledButton>
       {children}
     </Container>
   )
