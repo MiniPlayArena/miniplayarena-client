@@ -1,12 +1,21 @@
 /** HOME */
 'use client';
-import { Container, Box } from '@chakra-ui/react';
+import { Container, Button } from '@chakra-ui/react';
+import { StyledButton } from './components/themes/button';
+
+const backgroundUrl = '' //https://i.pinimg.com/originals/6f/c3/07/6fc307f1950ce15f220aeee764e219e5.gif'
+
+
 
 export function Index({ children }) {
-  return (
-    <Container maxW="2xl" h="100%" bg={'silver.100'} centerContent>
-      <Box bg={'salmon.100'}>Hello</Box>
-      {children}
-    </Container>
+    return (
+        <Container 
+            minH={'calc(100vh)'}
+            minW={'calc(100vw)'}
+            bg='salmon.100'>
+            <StyledButton>
+                Hello World!
+            </StyledButton>
+        </Container>
   );
 }

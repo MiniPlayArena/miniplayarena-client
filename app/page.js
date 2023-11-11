@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 
 import { CLIENT_STATIC_FILES_RUNTIME_REACT_REFRESH } from 'next/dist/shared/lib/constants';
-import { Index } from '.';
+import { Index } from './index';
 import { io } from 'socket.io-client';
 
 const URL = 'http://143.167.68.112:696/';
