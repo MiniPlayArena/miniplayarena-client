@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 
+import { Center } from '@chakra-ui/react'
 import { Index } from './index'
 import { io } from 'socket.io-client'
 
@@ -139,7 +140,7 @@ export default function Home() {
 
   return (
     <Index>
-      <main className="flex min-h-screen flex-col items-center justify-between p-24">
+      <Center>
         {!usernameAdded ? (
           <form onSubmit={emitUsernameToServer}>
             <label>
@@ -190,7 +191,7 @@ export default function Home() {
             )}
           </>
         )}
-      </main>
+      </Center>
     </Index>
   )
 }
