@@ -1,20 +1,25 @@
 'use client'
 
 import {
+  Box,
   ButtonGroup,
+  Flex,
+  IconButton,
   Input,
   InputGroup,
   InputRightElement,
   SimpleGrid,
   Text,
 } from '@chakra-ui/react'
-import { Center, useToast } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
 
+import { CopyIcon } from './components/copyIcon'
 import { Index } from './index'
 import { StyledButton } from './components/button'
 import { UserIcon } from './components/userIcon'
+import copy from 'copy-text-to-clipboard'
 import { io } from 'socket.io-client'
+import { useToast } from '@chakra-ui/react'
 
 const URL = 'http://143.167.68.112:696/'
 
@@ -100,7 +105,11 @@ export default function Home() {
       return
     }
 
-    socket.emit('create-game', { partyId: party.partyId, clientId: clientId, gameId: 'uno' })
+    socket.emit('create-game', {
+      partyId: party.partyId,
+      clientId: clientId,
+      gameId: 'uno',
+    })
   }
 
   useEffect(() => {
@@ -151,6 +160,12 @@ export default function Home() {
     function onPlayerCreated(data) {
       if (data.clientId) {
         setUsernameAdded(true)
+        toast({
+          title: `Welcome ${username}`,
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+        })
       }
     }
 
@@ -184,7 +199,9 @@ export default function Home() {
         })
       } else {
         toast({
-          title: `${data.players[Object.keys(data.players).at(-1)]} joined the party!`,
+          title: `${
+            data.players[Object.keys(data.players).at(-1)]
+          } joined the party!`,
           status: 'success',
           duration: 3000,
           isClosable: true,
@@ -193,7 +210,12 @@ export default function Home() {
     }
 
     function onLeftParty(data) {
-      if (data.players === null || !Object.keys(data.players === null ? [] : data.players).includes(_socket.id)) {
+      if (
+        data.players === null ||
+        !Object.keys(data.players === null ? [] : data.players).includes(
+          _socket.id,
+        )
+      ) {
         setParty(null)
         setJoinPartyId('')
         setIsPlaying(false)
@@ -212,10 +234,14 @@ export default function Home() {
       setGameState((prevState) => ({
         ...prevState,
         gameId: data.gameId,
-        nextPlayer: data.next_player
+        nextPlayer: data.next_player,
       }))
 
-      _socket.emit('get-game-state', { partyId: _partyId, clientId: _socket.id, gameId: 'uno' })
+      _socket.emit('get-game-state', {
+        partyId: _partyId,
+        clientId: _socket.id,
+        gameId: 'uno',
+      })
     }
 
     function onGameState(data) {
@@ -224,7 +250,7 @@ export default function Home() {
         ...prevState,
         currentFacingCard: data.c_facing_card,
         currentHand: data.c_hand,
-        nextPlayer: data.next_player
+        nextPlayer: data.next_player,
       }))
     }
 
@@ -271,8 +297,8 @@ export default function Home() {
               size="sm"
               mr="1.75rem"
               onClick={emitUsernameToServer}
-              bg='teal.300'
-              color='violet.100'
+              bg="teal.300"
+              color="violet.100"
             >
               Set
             </StyledButton>
@@ -282,9 +308,27 @@ export default function Home() {
         <>
           {party !== null ? (
             <>
-              <Text>Party ID: {party.partyId}</Text>
+              <Flex direction="row" alignItems="center" justifyContent="center">
+                <Text>
+                  Party ID: <Text as="b">{party.partyId}</Text>
+                </Text>
+                <IconButton
+                  onClick={() => {
+                    copy(party.partyId)
+                    toast({
+                      title: 'Copied the party code!',
+                      status: 'info',
+                      duration: 1500,
+                      isClosable: true,
+                    })
+                  }}
+                  bg="none"
+                  _hover={{ bg: 'none' }}
+                  icon={<CopyIcon />}
+                />
+              </Flex>
               <Text>Players:</Text>
-              <SimpleGrid columns='2' spacing='2.5'>
+              <SimpleGrid columns="2" spacing="2.5">
                 {Object.keys(party.players).map((playerId) => {
                   let isLeader = party.partyLeader === playerId
                   return (
@@ -296,11 +340,20 @@ export default function Home() {
               </SimpleGrid>
 
               <ButtonGroup>
-                <StyledButton variant="styled_dark" bg='red.800' onClick={emitLeaveParty}>
+                <StyledButton
+                  variant="styled_dark"
+                  bg="red.800"
+                  onClick={emitLeaveParty}
+                >
                   Leave Party
                 </StyledButton>
                 {party.partyLeader === clientId && (
-                  <StyledButton variant="styled_dark" bg='teal.300' color='violet.100' onClick={emitStartGame}>
+                  <StyledButton
+                    variant="styled_dark"
+                    bg="teal.300"
+                    color="violet.100"
+                    onClick={emitStartGame}
+                  >
                     Start Game
                   </StyledButton>
                 )}
@@ -308,8 +361,11 @@ export default function Home() {
             </>
           ) : (
             <>
+              <Text fontSize="xl" my="1rem">
+                Hello {username}!
+              </Text>
               <Input
-                maxW='16rem'
+                maxW="16rem"
                 value={joinPartyId}
                 variant="styled"
                 onChange={(e) => setJoinPartyId(e.target.value.toUpperCase())}

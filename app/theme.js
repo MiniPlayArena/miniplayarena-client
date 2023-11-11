@@ -26,18 +26,18 @@ const colors = {
   },
   teal: {
     300: '#5eead4',
-    500: '#14b8a6'
+    500: '#14b8a6',
   },
   green: {
     600: '#16a34a',
     700: '#15803d',
   },
   lime: {
-    400: '#a3e635'
+    400: '#a3e635',
   },
   red: {
-    800: '#991b1b'
-  }
+    800: '#991b1b',
+  },
 }
 
 export const theme = extendTheme({

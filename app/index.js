@@ -1,7 +1,9 @@
 /** HOME */
 'use client'
-import React from 'react'
+
 import { Container, Heading } from '@chakra-ui/react'
+
+import React from 'react'
 
 export function Index({ children }) {
   return (
@@ -14,7 +16,7 @@ export function Index({ children }) {
       flexDir="column"
       alignItems="center"
     >
-      <Heading> MiniPlayArena</Heading>
+      <Heading>MiniPlayArena</Heading>
       {children}
     </Container>
   )
