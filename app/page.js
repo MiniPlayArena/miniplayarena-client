@@ -123,7 +123,6 @@ export default function Home() {
     }
 
     function onPartyCreated(data) {
-      console.log(data)
       setParty((prevState) => ({
         ...prevState,
         partyId: data.partyId,
@@ -139,12 +138,27 @@ export default function Home() {
         partyLeader: data.partyLeader,
         players: data.players,
       }))
+      if (Object.keys(data.players).at(-1) === _socket.id) {
+        toast({
+          title: 'You joined the party!',
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+        })
+      } else {
+        toast({
+          title: `${data.players[Object.keys(data.players).at(-1)]} joined the party!`,
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+        })
+      }
     }
 
     function onLeftParty(data) {
-      console.log(data)
-      if (data.players === null || Object.keys(data.players).includes(clientId)) {
+      if (data.players === null || !Object.keys(data.players === null ? [] : data.players).includes(_socket.id)) {
         setParty(null)
+        setJoinPartyId('')
       } else {
         setParty((prevState) => ({
           ...prevState,
