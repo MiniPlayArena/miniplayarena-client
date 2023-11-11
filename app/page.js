@@ -245,6 +245,8 @@ export default function Home() {
           ) : (
             <>
               <Input
+                width='auto'
+                margin='3'
                 value={joinPartyId}
                 variant="styled"
                 onChange={(e) => setJoinPartyId(e.target.value)}
