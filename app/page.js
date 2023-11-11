@@ -7,19 +7,42 @@ import { io } from 'socket.io-client';
 const URL = 'http://143.167.68.112:696/';
 
 export default function Home() {
+  const [socket, setSocket] = useState(null)
   const [isConnected, setIsConnected] = useState(false);
   const [clientId, setClientId] = useState();
   const [username, setUsername] = useState('Kush');
 
+  function emitUsernameToServer(e) {
+    e.preventDefault()
+    if (!socket) {
+      console.error('Socket not connected')
+      return
+    }
+
+    socket.emit('create-player', { clientId: clientId, username: username })
+  }
+
+  function emitCreateParty(e) {
+    if (!socket) {
+      console.error('Socket not connected')
+      return
+    }
+    if (!clientId) {
+      console.error('Client ID not set')
+      return
+    }
+
+    socket.emit('create-party', { partyLeader: clientId })
+  }
 
   useEffect(() => {
-    const socket = io(URL);
-    console.log('Socket successfully connected');
+    const _socket = io(URL);
+    setSocket(_socket)
 
     function onConnect() {
       setIsConnected(true);
-      console.log(`Connected to server, client id: ${socket.id}`);
-      setClientId(socket.id);
+      console.log(`Connected to server, client id: ${_socket.id}`);
+      setClientId(_socket.id);
     }
 
     function onDisconnect() {
@@ -28,26 +51,26 @@ export default function Home() {
       setClientId(null);
     }
 
-    function onFooEvent(value) {
-      setFooEvents((previous) => [...previous, value]);
+    function onError(data) {
+      console.error(data)
     }
 
-    socket.on('connect', onConnect);
-    socket.on('disconnect', onDisconnect);
-    socket.on('foo', onFooEvent);
+    _socket.on('connect', onConnect);
+    _socket.on('disconnect', onDisconnect);
+    _socket.on('error', onError);
 
     return () => {
-      socket.off('connect', onConnect);
-      socket.off('disconnect', onDisconnect);
-      socket.off('foo', onFooEvent);
-      socket.disconnect();
+      _socket.off('connect', onConnect);
+      _socket.off('disconnect', onDisconnect);
+      _socket.off('error', onError);
+      _socket.disconnect();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <form>
+      <form onSubmit={emitUsernameToServer}>
         <label>
           Enter your name:
           <input
