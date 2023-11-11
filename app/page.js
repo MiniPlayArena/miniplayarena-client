@@ -1,8 +1,8 @@
 'use client'
 
+import { Center, useToast } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
 
-import { Center } from '@chakra-ui/react'
 import { Index } from './index'
 import { io } from 'socket.io-client'
 
@@ -16,6 +16,8 @@ export default function Home() {
   const [usernameAdded, setUsernameAdded] = useState(false)
   const [party, setParty] = useState(null)
   const [joinPartyId, setJoinPartyId] = useState('')
+
+  const toast = useToast()
 
   function emitUsernameToServer(e) {
     e.preventDefault()
@@ -80,6 +82,13 @@ export default function Home() {
       setIsConnected(true)
       console.log(`Connected to server, client id: ${_socket.id}`)
       setClientId(_socket.id)
+      toast({
+        title: 'Connected to server',
+        description: `Client ID: ${_socket.id}`,
+        status: 'info',
+        duration: 3000,
+        isClosable: true,
+      })
     }
 
     function onDisconnect() {
@@ -88,10 +97,23 @@ export default function Home() {
       setClientId(null)
       setUsernameAdded(false)
       setParty(null)
+      toast({
+        title: 'Disconnected from server',
+        status: 'info',
+        duration: 3000,
+        isClosable: true,
+      })
     }
 
     function onError(data) {
       console.error(data.message)
+      toast({
+        title: 'An error occurred',
+        description: data.message,
+        status: 'error',
+        duration: 9000,
+        isClosable: true,
+      })
     }
 
     function onPlayerCreated(data) {
@@ -119,12 +141,26 @@ export default function Home() {
       }))
     }
 
+    function onLeftParty(data) {
+      console.log(data)
+      if (data.players === null || Object.keys(data.players).includes(clientId)) {
+        setParty(null)
+      } else {
+        setParty((prevState) => ({
+          ...prevState,
+          partyLeader: data.partyLeader,
+          players: data.players,
+        }))
+      }
+    }
+
     _socket.on('connect', onConnect)
     _socket.on('disconnect', onDisconnect)
     _socket.on('error', onError)
     _socket.on('player-created', onPlayerCreated)
     _socket.on('party-created', onPartyCreated)
     _socket.on('joined-party', onJoinedParty)
+    _socket.on('left-party', onLeftParty)
 
     return () => {
       _socket.off('connect', onConnect)
@@ -133,6 +169,7 @@ export default function Home() {
       _socket.off('player-created', onPlayerCreated)
       _socket.off('party-created', onPartyCreated)
       _socket.off('joined-party', onJoinedParty)
+      _socket.off('left-party', onLeftParty)
       _socket.disconnect()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -161,11 +198,11 @@ export default function Home() {
               <>
                 <p>Party ID: {party.partyId}</p>
                 <p>Players:</p>
-                {party.players.map((player) => {
-                  let isLeader = party.partyLeader === player
+                {Object.keys(party.players).map((playerId) => {
+                  let isLeader = party.partyLeader === playerId
                   return (
-                    <p key={player}>
-                      {player} {isLeader && '👑'}
+                    <p key={playerId}>
+                      {party.players[playerId]} {isLeader && '👑'}
                     </p>
                   )
                 })}

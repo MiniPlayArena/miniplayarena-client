@@ -1,11 +1,11 @@
 'use client'
 
-import { extendTheme } from '@chakra-ui/react'
-import { buttonTheme } from './components/themes/buttonTheme'
-import { modalTheme } from './components/themes/modalTheme'
-
 // Supports weights 100-900
 import '@fontsource-variable/space-grotesk'
+
+import { buttonTheme } from './components/themes/buttonTheme'
+import { extendTheme } from '@chakra-ui/react'
+import { modalTheme } from './components/themes/modalTheme'
 
 const colors = {
   silver: {
