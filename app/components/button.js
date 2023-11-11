@@ -13,6 +13,7 @@ export function StyledButton(props) {
         scale: 0.92,
       }}
       maxW="fit-content"
+      m='0.5rem'
     >
       <Button {...props}>{props.children}</Button>
     </ChakraBox>

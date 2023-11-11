@@ -82,6 +82,23 @@ export default function Home() {
     socket.emit('leave-party', { partyId: party.partyId, clientId: clientId })
   }
 
+  function emitStartGame() {
+    if (!socket) {
+      console.error('Socket not connected')
+      return
+    }
+    if (!clientId) {
+      console.error('Client ID not set')
+      return
+    }
+    if (!party.partyId) {
+      console.error('Party ID not set')
+      return
+    }
+
+    socket.emit('create-game', { partyId: party.partyId, clientId: clientId, gameId: 'uno' })
+  }
+
   useEffect(() => {
     const _socket = io(URL)
     setSocket(_socket)
@@ -178,6 +195,10 @@ export default function Home() {
       }
     }
 
+    function onGameCreated(data) {
+      console.log(data)
+    }
+
     _socket.on('connect', onConnect)
     _socket.on('disconnect', onDisconnect)
     _socket.on('error', onError)
@@ -185,6 +206,7 @@ export default function Home() {
     _socket.on('party-created', onPartyCreated)
     _socket.on('joined-party', onJoinedParty)
     _socket.on('left-party', onLeftParty)
+    _socket.on('game-created', onGameCreated)
 
     return () => {
       _socket.off('connect', onConnect)
@@ -194,6 +216,7 @@ export default function Home() {
       _socket.off('party-created', onPartyCreated)
       _socket.off('joined-party', onJoinedParty)
       _socket.off('left-party', onLeftParty)
+      _socket.off('game-created', onGameCreated)
       _socket.disconnect()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -202,7 +225,7 @@ export default function Home() {
   return (
     <Index>
       {!usernameAdded ? (
-        <InputGroup margin="3" width="auto">
+        <InputGroup margin="3" width="16rem">
           <Input
             value={username}
             variant="styled"
@@ -239,15 +262,22 @@ export default function Home() {
                   </Text>
                 )
               })}
-              <StyledButton variant="styled_dark" onClick={emitLeaveParty}>
-                {' '}
-                Leave Party
-              </StyledButton>
+
+              <ButtonGroup>
+                <StyledButton variant="styled_dark" bg='red.800' onClick={emitLeaveParty}>
+                  Leave Party
+                </StyledButton>
+                {party.partyLeader === clientId && (
+                  <StyledButton variant="styled_dark" bg='teal.300' color='violet.100' onClick={emitStartGame}>
+                    Start Game
+                  </StyledButton>
+                )}
+              </ButtonGroup>
             </>
           ) : (
             <>
               <Input
-                maxW='15.5rem'
+                maxW='16rem'
                 value={joinPartyId}
                 variant="styled"
                 onChange={(e) => setJoinPartyId(e.target.value)}
