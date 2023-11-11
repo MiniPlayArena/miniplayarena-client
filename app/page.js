@@ -1,43 +1,43 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { Index } from '.';
 
 import { io } from 'socket.io-client';
 
 const URL = 'http://143.167.68.112:696/';
 
 export default function Home() {
-  const [socket, setSocket] = useState(null)
+  const [socket, setSocket] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
   const [clientId, setClientId] = useState();
   const [username, setUsername] = useState('Kush');
-
   function emitUsernameToServer(e) {
-    e.preventDefault()
+    e.preventDefault();
     if (!socket) {
-      console.error('Socket not connected')
-      return
+      console.error('Socket not connected');
+      return;
     }
 
-    socket.emit('create-player', { clientId: clientId, username: username })
+    socket.emit('create-player', { clientId: clientId, username: username });
   }
 
   function emitCreateParty(e) {
     if (!socket) {
-      console.error('Socket not connected')
-      return
+      console.error('Socket not connected');
+      return;
     }
     if (!clientId) {
-      console.error('Client ID not set')
-      return
+      console.error('Client ID not set');
+      return;
     }
 
-    socket.emit('create-party', { partyLeader: clientId })
+    socket.emit('create-party', { partyLeader: clientId });
   }
 
   useEffect(() => {
     const _socket = io(URL);
-    setSocket(_socket)
+    setSocket(_socket);
 
     function onConnect() {
       setIsConnected(true);
@@ -52,7 +52,7 @@ export default function Home() {
     }
 
     function onError(data) {
-      console.error(data)
+      console.error(data);
     }
 
     _socket.on('connect', onConnect);
@@ -69,22 +69,24 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <form onSubmit={emitUsernameToServer}>
-        <label>
-          Enter your name:
-          <input
-            className="text-black"
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        </label>
-        <input type="submit" />
-      </form>
-      {/* {chats.forEach(element => {
+    <Index>
+      <main className="flex min-h-screen flex-col items-center justify-between p-24">
+        <form onSubmit={emitUsernameToServer}>
+          <label>
+            Enter your name:
+            <input
+              className="text-black"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+          </label>
+          <input type="submit" />
+        </form>
+        {/* {chats.forEach(element => {
         <p>{element}</p>
       })} */}
-    </main>
+      </main>
+    </Index>
   );
 }
