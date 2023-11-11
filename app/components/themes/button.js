@@ -1,5 +1,5 @@
 'use client'
-
+    
 import { defineStyle, defineStyleConfig } from '@chakra-ui/react';
 import { Button } from '@chakra-ui/react';
 import { ChakraBox } from '../animations/chakraBox';

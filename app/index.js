@@ -15,6 +15,7 @@ export function Index({ children }) {
             bg='salmon.100'>
             <StyledButton>
                 Hello World!
+                {children}
             </StyledButton>
         </Container>
   );
