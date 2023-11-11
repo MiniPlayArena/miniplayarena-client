@@ -63,6 +63,7 @@ export default function Home() {
       <form onSubmit={connectToServer}>
         <label>Enter your name:
           <input
+            className='text-black'
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
