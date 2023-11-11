@@ -1,9 +1,9 @@
-import { Providers } from './providers';
+import { Providers } from './providers'
 
 export const metadata = {
   title: 'MiniPlayArena',
   description: 'Play popular games with you friends for free!',
-};
+}
 
 export default function RootLayout({ children }) {
   return (
@@ -12,5 +12,5 @@ export default function RootLayout({ children }) {
         <Providers>{children}</Providers>
       </body>
     </html>
-  );
+  )
 }
