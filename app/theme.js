@@ -1,7 +1,7 @@
 'use client'
 
-import { extendTheme } from '@chakra-ui/react';
-import { buttonTheme } from './components/themes/button';
+import { extendTheme } from '@chakra-ui/react'
+import { buttonTheme } from './components/themes/button'
 
 const colors = {
   silver: {
@@ -19,12 +19,11 @@ const colors = {
   salmon: {
     100: '#DB8A74',
   },
-};
+}
 
 export const theme = extendTheme({
   colors,
   components: {
-    Button: buttonTheme
-  }
-}
-);
+    Button: buttonTheme,
+  },
+})
