@@ -21,9 +21,6 @@ import copy from 'copy-text-to-clipboard'
 import { io } from 'socket.io-client'
 import { useToast } from '@chakra-ui/react'
 
-import kaboom from "kaboom"
-
-
 const URL = 'http://143.167.68.112:696/'
 
 export default function Home() {
@@ -125,21 +122,25 @@ export default function Home() {
 
     function onConnect() {
       setIsConnected(true)
-      console.log(`Connected to server, client id: ${_socket.id}`)
-      setClientId(_socket.id)
-      toast({
-        title: 'Connected to server',
-        description: `Client ID: ${_socket.id}`,
-        status: 'info',
-        duration: 3000,
-        isClosable: true,
-      })
+      console.log(`Connected to server`)
+      if (!window.localStorage.getItem('clientId')) {
+        _socket.emit('get-uuid')
+      } else {
+        setClientId(window.localStorage.getItem('clientId'))
+        toast({
+          title: 'Connected to server',
+          description: `Client ID: ${window.localStorage.getItem('clientId')}`,
+          status: 'info',
+          duration: 3000,
+          isClosable: true,
+        })
+      }
+
     }
 
     function onDisconnect() {
       console.log('Disconnected from server')
       setIsConnected(false)
-      setClientId(null)
       setUsernameAdded(false)
       setParty(null)
       setIsPlaying(false)
@@ -158,6 +159,18 @@ export default function Home() {
         description: data.message,
         status: 'error',
         duration: 9000,
+        isClosable: true,
+      })
+    }
+
+    function onSetUuid(data) {
+      setClientId(data.uuid)
+      window.localStorage.setItem('clientId', data.uuid)
+      toast({
+        title: 'Retrieved client ID',
+        description: `Client ID: ${data.uuid}`,
+        status: 'info',
+        duration: 3000,
         isClosable: true,
       })
     }
@@ -261,6 +274,7 @@ export default function Home() {
     _socket.on('connect', onConnect)
     _socket.on('disconnect', onDisconnect)
     _socket.on('error', onError)
+    _socket.on('set-uuid', onSetUuid)
     _socket.on('player-created', onPlayerCreated)
     _socket.on('party-created', onPartyCreated)
     _socket.on('joined-party', onJoinedParty)
@@ -272,6 +286,7 @@ export default function Home() {
       _socket.off('connect', onConnect)
       _socket.off('disconnect', onDisconnect)
       _socket.off('error', onError)
+      _socket.off('set-uuid', onSetUuid)
       _socket.off('player-created', onPlayerCreated)
       _socket.off('party-created', onPartyCreated)
       _socket.off('joined-party', onJoinedParty)
