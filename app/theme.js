@@ -1,7 +1,8 @@
 'use client'
 
 import { extendTheme } from '@chakra-ui/react'
-import { buttonTheme } from './components/themes/button'
+import { buttonTheme } from './components/themes/buttonTheme'
+import { modalTheme } from './components/themes/modalTheme'
 
 const colors = {
   silver: {
@@ -25,5 +26,6 @@ export const theme = extendTheme({
   colors,
   components: {
     Button: buttonTheme,
+    Modal: modalTheme
   },
 })
