@@ -24,6 +24,17 @@ const colors = {
   salmon: {
     100: '#DB8A74',
   },
+  teal: {
+    300: '#5eead4',
+    500: '#14b8a6'
+  },
+  green: {
+    600: '#16a34a',
+    700: '#15803d',
+  },
+  lime: {
+    400: '#a3e635'
+  }
 }
 
 export const theme = extendTheme({

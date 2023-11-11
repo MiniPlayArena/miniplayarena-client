@@ -217,6 +217,8 @@ export default function Home() {
               size="sm"
               mr="1.75rem"
               onClick={emitUsernameToServer}
+              bg='teal.300'
+              color='violet.100'
             >
               Set
             </StyledButton>
@@ -245,8 +247,7 @@ export default function Home() {
           ) : (
             <>
               <Input
-                width='auto'
-                margin='3'
+                maxW='15.5rem'
                 value={joinPartyId}
                 variant="styled"
                 onChange={(e) => setJoinPartyId(e.target.value)}
