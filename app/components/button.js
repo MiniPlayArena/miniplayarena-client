@@ -6,11 +6,11 @@ export function StyledButton(props) {
     <ChakraBox
       whileHover={{
         opacity: 0.9,
-        scale: 1.1,
+        scale: 1.08,
         transition: { duration: 0.2 },
       }}
       whileTap={{
-        scale: 0.9,
+        scale: 0.92,
       }}
       maxW="fit-content"
     >

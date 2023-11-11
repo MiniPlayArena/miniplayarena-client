@@ -3,9 +3,12 @@
 import { defineStyle, defineStyleConfig } from '@chakra-ui/react'
 
 const styled = defineStyle({
-  color: 'silver.100',
+  bg: 'silver.100',
+  color: 'violet.100',
+  borderRadius: 'md',
+  borderColor: 'silver.100',
 })
 
-export const textTheme = defineStyleConfig({
+export const inputTheme = defineStyleConfig({
   variants: { styled },
 })

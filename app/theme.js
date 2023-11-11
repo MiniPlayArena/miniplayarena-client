@@ -1,5 +1,13 @@
 'use client'
 
+<<<<<<< Updated upstream
+=======
+import { extendTheme } from '@chakra-ui/react'
+import { buttonTheme } from './components/themes/buttonTheme'
+import { modalTheme } from './components/themes/modalTheme'
+import { inputTheme } from './components/themes/inputTheme'
+
+>>>>>>> Stashed changes
 // Supports weights 100-900
 import '@fontsource-variable/space-grotesk'
 
@@ -30,6 +38,17 @@ export const theme = extendTheme({
   components: {
     Button: buttonTheme,
     Modal: modalTheme,
+    Heading: {
+      baseStyle: {
+        color: 'silver.100',
+      },
+    },
+    Text: {
+      baseStyle: {
+        color: 'silver.100',
+      },
+    },
+    Input: inputTheme,
   },
   fonts: {
     body: `'Space Grotesk Variable', sans-serif`,
