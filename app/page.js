@@ -21,6 +21,9 @@ import copy from 'copy-text-to-clipboard'
 import { io } from 'socket.io-client'
 import { useToast } from '@chakra-ui/react'
 
+import kaboom from "kaboom"
+
+
 const URL = 'http://143.167.68.112:696/'
 
 export default function Home() {
@@ -110,6 +113,8 @@ export default function Home() {
       clientId: clientId,
       gameId: 'uno',
     })
+
+    kaboom();
   }
 
   useEffect(() => {
