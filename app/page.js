@@ -11,7 +11,7 @@ import {
   SimpleGrid,
   Text,
 } from '@chakra-ui/react'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 
 import { CopyIcon } from './components/copyIcon'
 import { Index } from './index'
@@ -20,6 +20,8 @@ import { UserIcon } from './components/userIcon'
 import copy from 'copy-text-to-clipboard'
 import { io } from 'socket.io-client'
 import { useToast } from '@chakra-ui/react'
+
+import kaboom from "kaboom"
 
 const URL = 'http://143.167.68.112:696/'
 
@@ -33,6 +35,8 @@ export default function Home() {
   const [joinPartyId, setJoinPartyId] = useState('')
   const [isPlaying, setIsPlaying] = useState(false)
   const [gameState, setGameState] = useState(null)
+
+  const canvasRef = useRef()
 
   const toast = useToast()
 
@@ -110,8 +114,6 @@ export default function Home() {
       clientId: clientId,
       gameId: 'uno',
     })
-
-    kaboom();
   }
 
   useEffect(() => {
@@ -259,6 +261,13 @@ export default function Home() {
         clientId: _socket.id,
         gameId: 'uno',
       })
+
+      const k = kaboom({
+        width: 320,
+        height: 240,
+        canvas: canvasRef.current
+      });
+    
     }
 
     function onGameState(data) {
@@ -409,7 +418,10 @@ export default function Home() {
           )}</>
       ) : (
         <>
-          <p>Playing game now !</p>
+        <div id='canvasRoot'>
+          <canvas ref={canvasRef}>
+          </canvas>
+        </div>
         </>
       )}
     </Index>
