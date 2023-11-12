@@ -259,7 +259,7 @@ export default function Home() {
       setGameState((prevState) => ({
         ...prevState,
         gameId: data.gameId,
-        nextPlayer: data.next_player,
+        currentPlayer: data.current_player,
       }))
 
       _socket.emit('get-game-state', {
@@ -284,7 +284,7 @@ export default function Home() {
         ...prevState,
         currentFacingCard: data.gameState.c_facing_card,
         currentHand: data.gameState.c_hand,
-        nextPlayer: data.gameState.next_player,
+        currentPlayer: data.gameState.current_player,
       }))
 
       let numCards = data.gameState.c_hand.length
