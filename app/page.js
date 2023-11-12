@@ -712,7 +712,6 @@ export default function Home() {
                       nextIdx = 0
                     }
                   }
-                  console.log(nextIdx, playerIdsList, playerId, playerIdsList[nextIdx])
                   return (
                     <UserIcon
                       key={playerId}
