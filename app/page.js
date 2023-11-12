@@ -268,30 +268,35 @@ export default function Home() {
       })
 
       _kaboom = kaboom({
-        width: 320,
-        height: 240,
+        width: 960,
+        height: 540,
         canvas: canvasRef.current,
         global: false
       })
 
       _kaboom.loadSpriteAtlas("sprites/uno_ss.png", {
-        "card_1" : {
+        "all_cards" : {
           x: 0,
           y: 0,
-          width: 84,
-          height: 129,
-          sliceX: 1,
-          sliceY: 1
+          width: 1066,
+          height: 508,
+          sliceX: 13,
+          sliceY: 4,
+          anims: {
+            all_cards_gif: { from: 0, to: 51}
+          }
         }
       })
 
       _kaboom.scene("game", () => {
         const card = _kaboom.add([
-          _kaboom.sprite("card_1"),
+          _kaboom.sprite("all_cards"),
           _kaboom.pos(0,0),
           _kaboom.area()
         ])
+        card.play("all_cards_gif")
       })
+      
 
       _kaboom.go("game")
      
