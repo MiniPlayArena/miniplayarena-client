@@ -23,7 +23,7 @@ import { io } from 'socket.io-client'
 import kaboom from "kaboom"
 import { useToast } from '@chakra-ui/react'
 
-const URL = 'http://143.167.195.224:696/'
+const URL = 'http://143.167.70.55:696/'
 
 export default function Home() {
   const [socket, setSocket] = useState(null)
