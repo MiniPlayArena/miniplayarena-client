@@ -17,6 +17,7 @@ import { CopyIcon } from './components/copyIcon'
 import { Index } from './index'
 import { StyledButton } from './components/button'
 import { UserIcon } from './components/userIcon'
+import cardsData from '../public/sprites/cards.json'
 import copy from 'copy-text-to-clipboard'
 import { io } from 'socket.io-client'
 import kaboom from "kaboom"
@@ -274,46 +275,32 @@ export default function Home() {
         global: false
       })
 
-      _kaboom.loadSpriteAtlas("sprites/uno_ss.png", {
-        "all_cards" : {
-          x: 0,
-          y: 0,
-          width: 1066,
-          height: 508,
-          sliceX: 13,
-          sliceY: 4,
-          anims: {
-            all_cards_gif: { from: 0, to: 51}
-          }
-        }
-      })
-
-      _kaboom.scene("game", () => {
-        const card = _kaboom.add([
-          _kaboom.sprite("all_cards"),
-          _kaboom.pos(0,0),
-          _kaboom.area()
-        ])
-        card.play("all_cards_gif")
-      })
-      
-
-      _kaboom.go("game")
-     
+      _kaboom.loadSpriteAtlas("sprites/uno_sprites.png", cardsData)
     }
 
     function onGameState(data) {
       console.log(data)
       setGameState((prevState) => ({
         ...prevState,
-        currentFacingCard: data.c_facing_card,
-        currentHand: data.c_hand,
-        nextPlayer: data.next_player,
+        currentFacingCard: data.gameState.c_facing_card,
+        currentHand: data.gameState.c_hand,
+        nextPlayer: data.gameState.next_player,
       }))
-      console.log(_kaboom)
-      //_kaboom.add([_kaboom.text("Score: 0"),
-      //_kaboom.pos(4, 4),])
 
+      let numCards = data.gameState.c_hand.length
+      let xPos = 50
+      let yPos = 90
+      let overlappingFactor = 4
+
+      data.gameState.c_hand.map((cardId, idx) => {
+        _kaboom.add([
+          _kaboom.sprite(cardId),
+          _kaboom.pos(xPos, yPos),
+          _kaboom.anchor('center'),
+          _kaboom.area()
+        ])
+        xPos += 80 - (overlappingFactor * numCards)
+      })
     }
 
     _socket.on('connect', onConnect)
