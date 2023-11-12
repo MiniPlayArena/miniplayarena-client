@@ -27,6 +27,8 @@ import { games } from './components/games'
 import { VerticalCenteredModal } from './components/modal'
 import { ChakraBox } from './components/animations/chakraBox'
 import { Link } from '@chakra-ui/next-js'
+import { BasicColorPicker } from './components/modal_color_picker'
+
 
 const URL = 'http://143.167.70.55:696/'
 
@@ -42,9 +44,17 @@ export default function Home() {
   const [gameState, setGameState] = useState(null)
   const [gameSelected, setGameSelected] = useState('uno')
 
+  const [openModal, setOpenModal] = useState(false)
+  const [modalState, setModalState] = useState('')
+
   const canvasRef = useRef()
 
   const toast = useToast()
+
+
+  function createModal(){
+    setOpenModal(true)
+  }
 
   function emitUsernameToServer(e) {
     e.preventDefault()
@@ -542,6 +552,7 @@ export default function Home() {
           )}
         </>
       )}
+       {openModal && <BasicColorPicker updateState={setModalState} setOpenModal={setOpenModal}/>}
     </Index>
   )
 }

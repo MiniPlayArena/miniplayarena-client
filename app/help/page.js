@@ -3,8 +3,20 @@
 import { Container, Heading, Text } from '@chakra-ui/react'
 import { StyledButton } from '../components/button'
 import { Link } from '@chakra-ui/next-js'
+import { useDisclosure } from '@chakra-ui/react'
+import { BasicColorPicker } from '../components/modal_color_picker'
+import { useState } from 'react'
 
 export default function Page() {
+
+  const [openModal, setOpenModal] = useState(false)
+
+  function returnModal(){
+    console.log('im getting called')
+    setOpenModal(true)
+
+  }
+
   return (
     <Container
       minH={'calc(100vh)'}
@@ -40,6 +52,14 @@ export default function Page() {
       Back
       </StyledButton>
         </Link>
+
+        <StyledButton variant='styled_light' onClick={returnModal}>
+          Open Modal
+
+        </StyledButton>
+
+        {openModal && <BasicColorPicker setOpenModal={setOpenModal}/>}
+  
     </Container>
   )
 }
