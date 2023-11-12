@@ -141,6 +141,7 @@ export default function Home() {
     var _kaboom = null
     var _ui = null
     let score = 0
+    var playedCard = false
 
     function onConnect() {
       setIsConnected(true)
@@ -270,6 +271,7 @@ export default function Home() {
     }
 
     function onGameCreated(data) {
+      toast.closeAll()
       console.log(data)
       setIsPlaying(true)
       setGameState((prevState) => ({
@@ -288,7 +290,8 @@ export default function Home() {
         width: 960,
         height: 540,
         canvas: canvasRef.current,
-        global: false
+        global: false,
+        background: [0, 0, 0, 0],
       })
 
       _kaboom.loadSpriteAtlas("sprites/uno_sprites.png", cardsData)
@@ -303,26 +306,39 @@ export default function Home() {
         currentPlayer: data.gameState.current_player,
       }))
 
-      if (data.gameState.current_player === clientId) {
+      var currentHand = data.gameState.c_hand
+
+      if (data.gameState.current_player === _clientId) {
         _kaboom.add([
-          _kaboom.text("It's your turn!", { width: _kaboom.width() }),
-          _kaboom.pos(20, _kaboom.height() - 20),
-          _kaboom.anchor('center')
+          _kaboom.text("[green]It's your turn![/green]", {
+            size: 48, styles: {
+              "green": {
+                color: _kaboom.rgb(163, 230, 53),
+              }
+            }
+          }),
+          _kaboom.pos(_kaboom.width() / 2, _kaboom.height() - 165),
+          _kaboom.anchor('center'),
+          _kaboom.area()
         ])
       }
 
-      let numCards = data.gameState.c_hand.length
-      let xPos = 50
-      let yPos = 90
-      let overlappingFactor = 4
+      let numCards = currentHand.length
+      let xPos = (_kaboom.width() / 2) - (Math.floor(numCards / 2) * 82)
+      let yPos = _kaboom.height() - 70
+      let zPos = 0 // Use Z position to keep track of which card is clicked
 
-      data.gameState.c_hand.map((cardId, idx) => {
+      currentHand.map((cardId, idx) => {
         let c = _kaboom.add([
           _kaboom.sprite(cardId),
           _kaboom.pos(xPos, yPos),
           _kaboom.anchor('center'),
-          _kaboom.area()
+          _kaboom.area(),
+          _kaboom.z(zPos),
         ])
+
+        xPos += 84
+        zPos += 1
 
         c.onHover(() => {
           _kaboom.tween(c.pos, _kaboom.vec2(c.pos.x, c.pos.y - 30), 0.5, (p) => c.pos = p, _kaboom.easings.easeOutExpo)
@@ -330,7 +346,16 @@ export default function Home() {
         c.onHoverEnd(() => {
           _kaboom.tween(c.pos, _kaboom.vec2(c.pos.x, yPos), 0.5, (p) => c.pos = p, _kaboom.easings.easeOutExpo)
         })
-        xPos += 80 - (overlappingFactor * numCards)
+        c.onClick(() => {
+          console.log(currentHand[c.z])
+          if (playedCard) return
+          playedCard = true
+          _socket.emit('update-game-state', {
+            partyId: _partyId,
+            clientId: _clientId,
+            gameState: { played_card: currentHand[c.z] },
+          })
+        })
       })
     }
 
