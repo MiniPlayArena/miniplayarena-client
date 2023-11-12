@@ -12,5 +12,6 @@ export const games = [
     alt: 'snakes ladders',
     src: './snakes_ladders.png',
     desc: "bet you haven't tried this",
+    disabled: true,
   },
 ]

@@ -789,7 +789,7 @@ export default function Home() {
                   variant="styled_dark"
                   bg="teal.300"
                   color="violet.100"
-                  onClick={window.location.reload}
+                  onClick={() => { window.location.reload() }}
                 >
                   Play again
                 </StyledButton>
