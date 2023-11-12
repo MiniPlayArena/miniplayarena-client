@@ -4,13 +4,15 @@ export const games = [
         header: 'Not-Uno',
         alt: 'Not uno',
         src: './uno.png',
-        desc: "It's not uno!"
+        desc: "It's not uno!",
+        disabled: false
     },
     {
         name: 'snakes_ladders',
         header: "🐍 Snakes 'n' ladders 🪜",
         alt: 'snakes ladders',
         src: './snakes_ladders.png',
-        desc: "bet you haven't tried this"
+        desc: "bet you haven't tried this",
+        disabled: true
     }
 ]

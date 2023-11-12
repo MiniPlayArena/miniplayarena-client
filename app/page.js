@@ -122,15 +122,23 @@ export default function Home() {
     })
   }
 
-  function saveGameSelected(value){
-    setGameSelected(value)
-    toast({
-      title: `Selected ${value}`,
-      status: 'info',
-      duration: 3000,
-      isClosable: true,
-    })
-
+  function saveGameSelected(value, disabled){
+    if (disabled) {
+      toast({
+        title: `Game ${value} is disabled!`,
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      })
+    }else {
+      setGameSelected(value)
+      toast({
+        title: `Selected ${value}`,
+        status: 'info',
+        duration: 3000,
+        isClosable: true,
+      })
+    }
   }
 
   useEffect(() => {
@@ -471,7 +479,7 @@ export default function Home() {
                       return (
                         <ChakraBox
                         key={index}
-                        onClick={() => saveGameSelected(game.name)}
+                        onClick={() => saveGameSelected(game.name, game.disabled)}
                         whileTap= {{
                           scale:0.9
                         }}
@@ -484,6 +492,7 @@ export default function Home() {
                         src={game.src}
                         alt={game.alt}
                         name={game.name}
+                        disabled={game.disabled}
                         >
                             {game.desc}
                         </GameCard>
