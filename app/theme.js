@@ -36,8 +36,15 @@ const colors = {
     400: '#a3e635',
   },
   red: {
+    600: '#dc2626',
     800: '#991b1b',
   },
+  yellow: {
+    400: '#facc15'
+  },
+  blue: {
+    500: '#3b82f6'
+  }
 }
 
 export const theme = extendTheme({
