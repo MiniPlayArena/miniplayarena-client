@@ -614,7 +614,7 @@ export default function Home() {
       console.error('Client ID not set')
       return
     }
-    if (!party.partyId) {
+    if (!party) {
       console.error('Party ID not set')
       return
     }
