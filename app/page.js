@@ -26,6 +26,7 @@ import { GameCard } from './components/card'
 import { games } from './components/games'
 import { VerticalCenteredModal } from './components/modal'
 import { ChakraBox } from './components/animations/chakraBox'
+import { Link } from '@chakra-ui/next-js'
 
 const URL = 'http://143.167.70.55:696/'
 

@@ -1,7 +1,8 @@
 /** HOME */
 'use client'
 
-import { Container, Heading } from '@chakra-ui/react'
+import { Container, Heading , Box } from '@chakra-ui/react'
+import { Link } from '@chakra-ui/next-js'
 
 import React from 'react'
 
@@ -18,6 +19,7 @@ export function Index({ children }) {
     >
       <Heading>MiniPlayArena</Heading>
       {children}
+      <Link href='/help' color='teal.500'> how to play</Link>
     </Container>
   )
 }
