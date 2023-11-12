@@ -595,11 +595,11 @@ export default function Home() {
               </Flex>
               <Text mb="0.5rem"> Current game: {gameSelected}</Text>
               <Text> Players:</Text>
-              <SimpleGrid columns="2" spacing="2.5">
+              <SimpleGrid columns={party.players.length} spacing="2.5">
                 {Object.keys(party.players).map((playerId) => {
                   let isLeader = party.partyLeader === playerId
                   return (
-                    <UserIcon key={playerId} leader={isLeader.toString()}>
+                    <UserIcon isPlaying={isPlaying} n_cards={1} key={playerId} leader={isLeader.toString()}>
                       {party.players[playerId]}
                     </UserIcon>
                   )
