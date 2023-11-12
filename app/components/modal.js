@@ -33,11 +33,7 @@ export function VerticalCenteredModal(props) {
         <ModalContent>
           <ModalHeader> {props.heading} </ModalHeader>
           <ModalBody>
-            <Box
-              onClick={onClose}
-            >
-              {props.children}
-            </Box>
+            <Box onClick={onClose}>{props.children}</Box>
           </ModalBody>
           <ModalFooter>{props.functionButton}</ModalFooter>
         </ModalContent>

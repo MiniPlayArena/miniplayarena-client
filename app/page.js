@@ -13,22 +13,21 @@ import {
 } from '@chakra-ui/react'
 import { useEffect, useRef, useState } from 'react'
 
+import { BasicColorPicker } from './components/modal_color_picker'
+import { ChakraBox } from './components/animations/chakraBox'
 import { CopyIcon } from './components/copyIcon'
+import { GameCard } from './components/card'
 import { Index } from './index'
+import { Link } from '@chakra-ui/next-js'
 import { StyledButton } from './components/button'
 import { UserIcon } from './components/userIcon'
+import { VerticalCenteredModal } from './components/modal'
 import cardsData from '../public/sprites/cards.json'
 import copy from 'copy-text-to-clipboard'
-import { io } from 'socket.io-client'
-import kaboom from "kaboom"
-import { useToast } from '@chakra-ui/react'
-import { GameCard } from './components/card'
 import { games } from './components/games'
-import { VerticalCenteredModal } from './components/modal'
-import { ChakraBox } from './components/animations/chakraBox'
-import { Link } from '@chakra-ui/next-js'
-import { BasicColorPicker } from './components/modal_color_picker'
-
+import { io } from 'socket.io-client'
+import kaboom from 'kaboom'
+import { useToast } from '@chakra-ui/react'
 
 const URL = 'http://143.167.70.55:696/'
 
@@ -43,16 +42,16 @@ export default function Home() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [gameState, setGameState] = useState(null)
   const [gameSelected, setGameSelected] = useState('uno')
+  const [selectedCard, setSelectedCard] = useState()
 
   const [openModal, setOpenModal] = useState(false)
-  const [modalState, setModalState] = useState('')
+  const [modalState, setModalState] = useState('UNKNOWN')
 
   const canvasRef = useRef()
 
   const toast = useToast()
 
-
-  function createModal(){
+  function createModal() {
     setOpenModal(true)
   }
 
@@ -132,7 +131,7 @@ export default function Home() {
     })
   }
 
-  function saveGameSelected(value, disabled){
+  function saveGameSelected(value, disabled) {
     if (disabled) {
       toast({
         title: `Game ${value} is disabled!`,
@@ -140,7 +139,7 @@ export default function Home() {
         duration: 3000,
         isClosable: true,
       })
-    }else {
+    } else {
       setGameSelected(value)
       toast({
         title: `Selected ${value}`,
@@ -158,9 +157,11 @@ export default function Home() {
     var _clientId = ''
     var _partyId = ''
     var _kaboom = null
-    var _ui = null
-    let score = 0
-    var playedCard = false
+    var currentDisplayHand = []
+    var currentDisplayFacingCard = null
+    var displayIsYourTurn = null
+    var displayPickUpCard = null
+    var selectColourScene = null
 
     function onConnect() {
       setIsConnected(true)
@@ -178,7 +179,6 @@ export default function Home() {
           isClosable: true,
         })
       }
-
     }
 
     function onDisconnect() {
@@ -313,11 +313,27 @@ export default function Home() {
         background: [0, 0, 0, 0],
       })
 
-      _kaboom.loadSpriteAtlas("sprites/uno_sprites.png", cardsData)
+      _kaboom.loadSpriteAtlas('sprites/uno_sprites.png', cardsData)
     }
 
     function onGameState(data) {
       console.log(data)
+      currentDisplayHand.map((card) => {
+        card.destroy()
+      })
+
+      if (currentDisplayFacingCard !== null) {
+        currentDisplayFacingCard.destroy()
+      }
+
+      if (displayIsYourTurn !== null) {
+        displayIsYourTurn.destroy()
+      }
+
+      if (displayPickUpCard !== null) {
+        displayPickUpCard.destroy()
+      }
+
       setGameState((prevState) => ({
         ...prevState,
         currentFacingCard: data.gameState.c_facing_card,
@@ -327,23 +343,86 @@ export default function Home() {
 
       var currentHand = data.gameState.c_hand
 
+      currentDisplayFacingCard = _kaboom.add([
+        _kaboom.sprite(data.gameState.c_facing_card),
+        _kaboom.pos(_kaboom.width() / 2, _kaboom.height() / 2),
+        _kaboom.anchor('center'),
+        _kaboom.area(),
+      ])
+
+      displayPickUpCard = _kaboom.add([
+        _kaboom.sprite('BACK'),
+        _kaboom.pos((_kaboom.width() / 2) + 150, _kaboom.height() / 2),
+        _kaboom.rotate(15),
+        _kaboom.anchor('center'),
+        _kaboom.area(),
+      ])
+
+      displayPickUpCard.onClick(() => {
+        _socket.emit('pickup-card', {
+          partyId: _partyId,
+          clientId: _clientId,
+          gameId: gameSelected,
+        })
+      })
+
+      displayPickUpCard.onHover(() => {
+        _kaboom.setCursor("pointer")
+        _kaboom.tween(
+          displayPickUpCard.pos,
+          _kaboom.vec2(displayPickUpCard.pos.x - 5, displayPickUpCard.pos.y - 5),
+          0.5,
+          (p) => (displayPickUpCard.pos = p),
+          _kaboom.easings.easeOutExpo,
+        )
+        _kaboom.tween(
+          15,
+          10,
+          0.5,
+          (p) => (displayPickUpCard.rotateTo(p)),
+          _kaboom.easings.easeOutExpo,
+        )
+      })
+
+      displayPickUpCard.onHoverEnd(() => {
+        _kaboom.setCursor("default")
+        _kaboom.tween(
+          displayPickUpCard.pos,
+          _kaboom.vec2(displayPickUpCard.pos.x + 5, displayPickUpCard.pos.y + 5),
+          0.5,
+          (p) => (displayPickUpCard.pos = p),
+          _kaboom.easings.easeOutExpo,
+        )
+        _kaboom.tween(
+          10,
+          15,
+          0.5,
+          (p) => (displayPickUpCard.rotateTo(p)),
+          _kaboom.easings.easeOutExpo,
+        )
+      })
+
       if (data.gameState.current_player === _clientId) {
-        _kaboom.add([
+        displayIsYourTurn = _kaboom.add([
           _kaboom.text("[green]It's your turn![/green]", {
-            size: 48, styles: {
-              "green": {
+            size: 24,
+            styles: {
+              green: {
                 color: _kaboom.rgb(163, 230, 53),
-              }
-            }
+              },
+            },
+            transform: (idx, ch) => ({
+              scale: _kaboom.wave(1, 1.3, _kaboom.time() * 2)
+            }),
           }),
           _kaboom.pos(_kaboom.width() / 2, _kaboom.height() - 165),
           _kaboom.anchor('center'),
-          _kaboom.area()
+          _kaboom.area(),
         ])
       }
 
       let numCards = currentHand.length
-      let xPos = (_kaboom.width() / 2) - (Math.floor(numCards / 2) * 82)
+      let xPos = _kaboom.width() / 2 - Math.floor(numCards / 2) * 82
       let yPos = _kaboom.height() - 70
       let zPos = 0 // Use Z position to keep track of which card is clicked
 
@@ -356,25 +435,55 @@ export default function Home() {
           _kaboom.z(zPos),
         ])
 
+        currentDisplayHand.push(c)
+
         xPos += 84
         zPos += 1
 
         c.onHover(() => {
-          _kaboom.tween(c.pos, _kaboom.vec2(c.pos.x, c.pos.y - 30), 0.5, (p) => c.pos = p, _kaboom.easings.easeOutExpo)
+          _kaboom.setCursor("pointer")
+          _kaboom.tween(
+            c.pos,
+            _kaboom.vec2(c.pos.x, c.pos.y - 30),
+            0.5,
+            (p) => (c.pos = p),
+            _kaboom.easings.easeOutExpo,
+          )
         })
         c.onHoverEnd(() => {
-          _kaboom.tween(c.pos, _kaboom.vec2(c.pos.x, yPos), 0.5, (p) => c.pos = p, _kaboom.easings.easeOutExpo)
+          _kaboom.setCursor("default")
+          _kaboom.tween(
+            c.pos,
+            _kaboom.vec2(c.pos.x, yPos),
+            0.5,
+            (p) => (c.pos = p),
+            _kaboom.easings.easeOutExpo,
+          )
         })
         c.onClick(() => {
-          console.log(currentHand[c.z])
-          if (playedCard) return
-          playedCard = true
-          _socket.emit('update-game-state', {
-            partyId: _partyId,
-            clientId: _clientId,
-            gameState: { played_card: currentHand[c.z] },
-          })
+          let selectedCard = currentHand[c.z]
+
+          if (selectedCard.slice(0, 1) === 'W') {
+            createModal()
+            setSelectedCard(selectedCard)
+          } else {
+            _socket.emit('update-game-state', {
+              partyId: _partyId,
+              clientId: _clientId,
+              gameId: gameSelected,
+              gameState: { played_card: selectedCard },
+            })
+          }
         })
+      })
+    }
+
+    function onNewGameStateAvailable(data) {
+      console.log(data)
+      _socket.emit('get-game-state', {
+        partyId: _partyId,
+        clientId: _clientId,
+        gameId: gameSelected,
       })
     }
 
@@ -388,6 +497,7 @@ export default function Home() {
     _socket.on('left-party', onLeftParty)
     _socket.on('game-created', onGameCreated)
     _socket.on('game-state', onGameState)
+    _socket.on('new-game-state-available', onNewGameStateAvailable)
 
     return () => {
       _socket.off('connect', onConnect)
@@ -400,12 +510,40 @@ export default function Home() {
       _socket.off('left-party', onLeftParty)
       _socket.off('game-created', onGameCreated)
       _socket.off('game-state', onGameState)
+      _socket.off('new-game-state-available', onNewGameStateAvailable)
       _socket.disconnect()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  useEffect(() => {
+    if (!socket) {
+      console.error('Socket not connected')
+      return
+    }
+    if (!clientId) {
+      console.error('Client ID not set')
+      return
+    }
+    if (!party.partyId) {
+      console.error('Party ID not set')
+      return
+    }
+    if (!isPlaying) {
+      console.error('Game not started')
+      return
+    }
 
+    if (modalState !== 'UNKNOWN' && selectedCard.slice(0, 1) === 'W') {
+      socket.emit('update-game-state', {
+        partyId: party.partyId,
+        clientId: clientId,
+        gameId: gameSelected,
+        gameState: { played_card: selectedCard, selected_colour: modalState },
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [modalState, selectedCard])
 
   return (
     <Index>
@@ -455,7 +593,7 @@ export default function Home() {
                   icon={<CopyIcon />}
                 />
               </Flex>
-              <Text mb='0.5rem' > Current game: {gameSelected}</Text>
+              <Text mb="0.5rem"> Current game: {gameSelected}</Text>
               <Text> Players:</Text>
               <SimpleGrid columns="2" spacing="2.5">
                 {Object.keys(party.players).map((playerId) => {
@@ -467,62 +605,62 @@ export default function Home() {
                   )
                 })}
               </SimpleGrid>
-              <ButtonGroup>
-                <StyledButton
-                  variant="styled_dark"
-                  bg="red.800"
-                  onClick={emitLeaveParty}
-                >
-                  Leave Party
-                </StyledButton>
-                {party.partyLeader === clientId && (
-                  <>
-                  <VerticalCenteredModal 
-                    variant='styled_light'
-                    buttonText='Select Game'
-                    isPlaying={isPlaying}
-                    heading='Current Games'
-                  >
-                    <SimpleGrid columns={1} spacing='1rem'>
-
-                    {games.map((game,index) => {
-                      return (
-                        <ChakraBox
-                        key={index}
-                        onClick={() => saveGameSelected(game.name, game.disabled)}
-                        whileTap= {{
-                          scale:0.9
-                        }}
-                        whileFocus={{
-                          opacity: 0.8
-                        }}
-                        >
-                        <GameCard
-                        header={game.header}
-                        src={game.src}
-                        alt={game.alt}
-                        name={game.name}
-                        disabled={game.disabled}
-                        >
-                            {game.desc}
-                        </GameCard>
-                          </ChakraBox>
-                      )
-                    })}
-                    </SimpleGrid>
-                  </VerticalCenteredModal>
+              {!isPlaying && (
+                <ButtonGroup>
                   <StyledButton
                     variant="styled_dark"
-                    bg="teal.300"
-                    color="violet.100"
-                    onClick={emitStartGame}
-                    >
-                    Start Game
+                    bg="red.800"
+                    onClick={emitLeaveParty}
+                  >
+                    Leave Party
                   </StyledButton>
+                  {party.partyLeader === clientId && (
+                    <>
+                      <VerticalCenteredModal
+                        variant="styled_light"
+                        buttonText="Select Game"
+                        isPlaying={isPlaying}
+                        heading="Current Games"
+                      >
+                        <SimpleGrid columns={1} spacing="1rem">
+                          {games.map((game, index) => {
+                            return (
+                              <ChakraBox
+                                key={index}
+                                onClick={() => saveGameSelected(game.name, game.disabled)}
+                                whileTap={{
+                                  scale: 0.9,
+                                }}
+                                whileFocus={{
+                                  opacity: 0.8,
+                                }}
+                              >
+                                <GameCard
+                                  header={game.header}
+                                  src={game.src}
+                                  alt={game.alt}
+                                  name={game.name}
+                                  disabled={game.disabled}
+                                >
+                                  {game.desc}
+                                </GameCard>
+                              </ChakraBox>
+                            )
+                          })}
+                        </SimpleGrid>
+                      </VerticalCenteredModal>
+                      <StyledButton
+                        variant="styled_dark"
+                        bg="teal.300"
+                        color="violet.100"
+                        onClick={emitStartGame}
+                      >
+                        Start Game
+                      </StyledButton>
                     </>
-                )}
-              </ButtonGroup>
-
+                  )}
+                </ButtonGroup>
+              )}
               <canvas ref={canvasRef} />
             </>
           ) : (
@@ -552,7 +690,7 @@ export default function Home() {
           )}
         </>
       )}
-       {openModal && <BasicColorPicker updateState={setModalState} setOpenModal={setOpenModal}/>}
+      {openModal && <BasicColorPicker updateState={setModalState} setOpenModal={setOpenModal} />}
     </Index>
   )
 }
