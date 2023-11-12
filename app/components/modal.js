@@ -5,7 +5,7 @@ import {
   ModalHeader,
   ModalFooter,
   ModalBody,
-  ModalCloseButton,
+  Box,
   useDisclosure,
 } from '@chakra-ui/react'
 import { StyledButton } from './button'
@@ -32,14 +32,14 @@ export function VerticalCenteredModal(props) {
         <ModalOverlay />
         <ModalContent>
           <ModalHeader> {props.heading} </ModalHeader>
-          <ModalBody>{props.children}</ModalBody>
-          <ModalFooter>
-            <StyledButton variant="styled_dark" bg="lime.400" onClick={onClose}>
-              {' '}
-              Select{' '}
-            </StyledButton>
-            {props.functionButton}
-          </ModalFooter>
+          <ModalBody>
+            <Box
+              onClick={onClose}
+            >
+              {props.children}
+            </Box>
+          </ModalBody>
+          <ModalFooter>{props.functionButton}</ModalFooter>
         </ModalContent>
       </Modal>
     </>

@@ -39,7 +39,7 @@ export default function Home() {
   const [joinPartyId, setJoinPartyId] = useState('')
   const [isPlaying, setIsPlaying] = useState(false)
   const [gameState, setGameState] = useState(null)
-  const [gameSelected, setGameSelected] = useState('')
+  const [gameSelected, setGameSelected] = useState('uno')
 
   const canvasRef = useRef()
 
@@ -436,7 +436,8 @@ export default function Home() {
                   icon={<CopyIcon />}
                 />
               </Flex>
-              <Text>Players:</Text>
+              <Text mb='0.5rem' > Current game: {gameSelected}</Text>
+              <Text> Players:</Text>
               <SimpleGrid columns="2" spacing="2.5">
                 {Object.keys(party.players).map((playerId) => {
                   let isLeader = party.partyLeader === playerId
