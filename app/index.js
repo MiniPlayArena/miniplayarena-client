@@ -1,7 +1,7 @@
 /** HOME */
 'use client'
 
-import { Box, Container, Heading } from '@chakra-ui/react'
+import { Container, Heading, Text } from '@chakra-ui/react'
 
 import React from 'react'
 
@@ -17,6 +17,7 @@ export function Index({ children }) {
       alignItems="center"
     >
       <Heading>MiniPlayArena</Heading>
+      <Text mb='0.5rem'>Play <Text as='b' color='lime.400'>UNO</Text> online for <Text as='b' color='yellow.400'>free with friends</Text>!</Text>
       {children}
     </Container>
   )
