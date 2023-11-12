@@ -22,6 +22,10 @@ import copy from 'copy-text-to-clipboard'
 import { io } from 'socket.io-client'
 import kaboom from "kaboom"
 import { useToast } from '@chakra-ui/react'
+import { GameCard } from './components/card'
+import { games } from './components/games'
+import { VerticalCenteredModal } from './components/modal'
+import { ChakraBox } from './components/animations/chakraBox'
 
 const URL = 'http://143.167.70.55:696/'
 
@@ -35,6 +39,7 @@ export default function Home() {
   const [joinPartyId, setJoinPartyId] = useState('')
   const [isPlaying, setIsPlaying] = useState(false)
   const [gameState, setGameState] = useState(null)
+  const [gameSelected, setGameSelected] = useState('')
 
   const canvasRef = useRef()
 
@@ -112,8 +117,19 @@ export default function Home() {
     socket.emit('create-game', {
       partyId: party.partyId,
       clientId: clientId,
-      gameId: 'uno',
+      gameId: gameSelected,
     })
+  }
+
+  function saveGameSelected(value){
+    setGameSelected(value)
+    toast({
+      title: `Selected ${value}`,
+      status: 'info',
+      duration: 3000,
+      isClosable: true,
+    })
+
   }
 
   useEffect(() => {
@@ -265,7 +281,7 @@ export default function Home() {
       _socket.emit('get-game-state', {
         partyId: _partyId,
         clientId: _clientId,
-        gameId: 'uno',
+        gameId: gameSelected,
       })
 
       _kaboom = kaboom({
@@ -406,7 +422,6 @@ export default function Home() {
                   )
                 })}
               </SimpleGrid>
-
               <ButtonGroup>
                 <StyledButton
                   variant="styled_dark"
@@ -416,14 +431,49 @@ export default function Home() {
                   Leave Party
                 </StyledButton>
                 {party.partyLeader === clientId && (
+                  <>
+                  <VerticalCenteredModal 
+                    variant='styled_light'
+                    buttonText='Select Game'
+                    isPlaying={isPlaying}
+                    heading='Current Games'
+                  >
+                    <SimpleGrid columns={1} spacing='1rem'>
+
+                    {games.map((game,index) => {
+                      return (
+                        <ChakraBox
+                        key={index}
+                        onClick={() => saveGameSelected(game.name)}
+                        whileTap= {{
+                          scale:0.9
+                        }}
+                        whileFocus={{
+                          opacity: 0.8
+                        }}
+                        >
+                        <GameCard
+                        header={game.header}
+                        src={game.src}
+                        alt={game.alt}
+                        name={game.name}
+                        >
+                            {game.desc}
+                        </GameCard>
+                          </ChakraBox>
+                      )
+                    })}
+                    </SimpleGrid>
+                  </VerticalCenteredModal>
                   <StyledButton
                     variant="styled_dark"
                     bg="teal.300"
                     color="violet.100"
                     onClick={emitStartGame}
-                  >
+                    >
                     Start Game
                   </StyledButton>
+                    </>
                 )}
               </ButtonGroup>
 

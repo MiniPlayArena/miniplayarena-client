@@ -15,10 +15,12 @@ export function VerticalCenteredModal(props) {
 
   return (
     <>
-      <StyledButton variant={props.variant} onClick={onOpen}>
-        {' '}
-        {props.buttonText}{' '}
-      </StyledButton>
+      {props.isPlaying === false && (
+        <StyledButton variant={props.variant} onClick={onOpen}>
+          {' '}
+          {props.buttonText}{' '}
+        </StyledButton>
+      )}
 
       <Modal
         onClose={onClose}
@@ -30,12 +32,11 @@ export function VerticalCenteredModal(props) {
         <ModalOverlay />
         <ModalContent>
           <ModalHeader> {props.heading} </ModalHeader>
-          <ModalCloseButton />
           <ModalBody>{props.children}</ModalBody>
           <ModalFooter>
-            <StyledButton variant="styled_light" onClick={onClose}>
+            <StyledButton variant="styled_dark" bg="lime.400" onClick={onClose}>
               {' '}
-              Close{' '}
+              Select{' '}
             </StyledButton>
             {props.functionButton}
           </ModalFooter>
