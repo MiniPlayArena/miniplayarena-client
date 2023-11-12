@@ -23,7 +23,7 @@ import { io } from 'socket.io-client'
 import kaboom from "kaboom"
 import { useToast } from '@chakra-ui/react'
 
-const URL = 'http://143.167.68.112:696/'
+const URL = 'http://143.167.195.224:696/'
 
 export default function Home() {
   const [socket, setSocket] = useState(null)
@@ -287,6 +287,14 @@ export default function Home() {
         currentPlayer: data.gameState.current_player,
       }))
 
+      if (data.gameState.current_player === clientId) {
+        _kaboom.add([
+          _kaboom.text("It's your turn!", { width: _kaboom.width() }),
+          _kaboom.pos(20, _kaboom.height() - 20),
+          _kaboom.anchor('center')
+        ])
+      }
+
       let numCards = data.gameState.c_hand.length
       let xPos = 50
       let yPos = 90
@@ -301,7 +309,7 @@ export default function Home() {
         ])
 
         c.onHover(() => {
-          _kaboom.tween(c.pos, _kaboom.vec2(c.pos.x, c.pos.y-30), 0.5, (p) => c.pos = p, _kaboom.easings.easeOutExpo)
+          _kaboom.tween(c.pos, _kaboom.vec2(c.pos.x, c.pos.y - 30), 0.5, (p) => c.pos = p, _kaboom.easings.easeOutExpo)
         })
         c.onHoverEnd(() => {
           _kaboom.tween(c.pos, _kaboom.vec2(c.pos.x, yPos), 0.5, (p) => c.pos = p, _kaboom.easings.easeOutExpo)
