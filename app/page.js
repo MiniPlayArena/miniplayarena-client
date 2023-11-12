@@ -11,7 +11,7 @@ import {
   SimpleGrid,
   Text,
 } from '@chakra-ui/react'
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { CopyIcon } from './components/copyIcon'
 import { Index } from './index'
@@ -19,9 +19,8 @@ import { StyledButton } from './components/button'
 import { UserIcon } from './components/userIcon'
 import copy from 'copy-text-to-clipboard'
 import { io } from 'socket.io-client'
-import { useToast } from '@chakra-ui/react'
-
 import kaboom from "kaboom"
+import { useToast } from '@chakra-ui/react'
 
 const URL = 'http://143.167.68.112:696/'
 
@@ -120,7 +119,9 @@ export default function Home() {
     const _socket = io(URL)
     setSocket(_socket)
 
+    var _clientId = ''
     var _partyId = ''
+    var _kaboom = null
 
     function onConnect() {
       setIsConnected(true)
@@ -129,6 +130,7 @@ export default function Home() {
         _socket.emit('get-uuid')
       } else {
         setClientId(window.localStorage.getItem('clientId'))
+        _clientId = window.localStorage.getItem('clientId')
         toast({
           title: 'Connected to server',
           description: `Client ID: ${window.localStorage.getItem('clientId')}`,
@@ -168,6 +170,7 @@ export default function Home() {
     function onSetUuid(data) {
       setClientId(data.uuid)
       window.localStorage.setItem('clientId', data.uuid)
+      _clientId = data.uuid
       toast({
         title: 'Retrieved client ID',
         description: `Client ID: ${data.uuid}`,
@@ -210,7 +213,7 @@ export default function Home() {
       }))
       _partyId = data.partyId
 
-      if (Object.keys(data.players).at(-1) === _socket.id) {
+      if (Object.keys(data.players).at(-1) === _clientId) {
         toast({
           title: 'You joined the party!',
           status: 'success',
@@ -232,7 +235,7 @@ export default function Home() {
       if (
         data.players === null ||
         !Object.keys(data.players === null ? [] : data.players).includes(
-          _socket.id,
+          _clientId,
         )
       ) {
         setParty(null)
@@ -258,16 +261,16 @@ export default function Home() {
 
       _socket.emit('get-game-state', {
         partyId: _partyId,
-        clientId: _socket.id,
+        clientId: _clientId,
         gameId: 'uno',
       })
 
-      const k = kaboom({
+      _kaboom = kaboom({
         width: 320,
         height: 240,
-        canvas: canvasRef.current
-      });
-    
+        canvas: canvasRef.current,
+        global: false
+      })
     }
 
     function onGameState(data) {
@@ -278,6 +281,9 @@ export default function Home() {
         currentHand: data.c_hand,
         nextPlayer: data.next_player,
       }))
+      console.log(_kaboom)
+      _kaboom.add([_kaboom.text("Score: 0"),
+      _kaboom.pos(4, 4),])
     }
 
     _socket.on('connect', onConnect)
@@ -307,121 +313,115 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+
+
   return (
     <Index>
-      {!isPlaying ? (
+      {!usernameAdded ? (
+        <InputGroup margin="3" width="16rem">
+          <Input
+            value={username}
+            variant="styled"
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="enter username"
+            bg="silver.100"
+            color="violet.100"
+          />
+          <InputRightElement>
+            <StyledButton
+              variant="styled_dark"
+              size="sm"
+              mr="1.75rem"
+              onClick={emitUsernameToServer}
+              bg="teal.300"
+              color="violet.100"
+            >
+              Set
+            </StyledButton>
+          </InputRightElement>
+        </InputGroup>
+      ) : (
         <>
-          {!usernameAdded ? (
-            <InputGroup margin="3" width="16rem">
+          {party !== null ? (
+            <>
+              <Flex direction="row" alignItems="center" justifyContent="center">
+                <Text>
+                  Party ID: <Text as="b">{party.partyId}</Text>
+                </Text>
+                <IconButton
+                  onClick={() => {
+                    copy(party.partyId)
+                    toast({
+                      title: 'Copied the party code!',
+                      status: 'info',
+                      duration: 1500,
+                      isClosable: true,
+                    })
+                  }}
+                  bg="none"
+                  _hover={{ bg: 'none' }}
+                  icon={<CopyIcon />}
+                />
+              </Flex>
+              <Text>Players:</Text>
+              <SimpleGrid columns="2" spacing="2.5">
+                {Object.keys(party.players).map((playerId) => {
+                  let isLeader = party.partyLeader === playerId
+                  return (
+                    <UserIcon key={playerId} leader={isLeader.toString()}>
+                      {party.players[playerId]}
+                    </UserIcon>
+                  )
+                })}
+              </SimpleGrid>
+
+              <ButtonGroup>
+                <StyledButton
+                  variant="styled_dark"
+                  bg="red.800"
+                  onClick={emitLeaveParty}
+                >
+                  Leave Party
+                </StyledButton>
+                {party.partyLeader === clientId && (
+                  <StyledButton
+                    variant="styled_dark"
+                    bg="teal.300"
+                    color="violet.100"
+                    onClick={emitStartGame}
+                  >
+                    Start Game
+                  </StyledButton>
+                )}
+              </ButtonGroup>
+
+              <canvas ref={canvasRef} />
+            </>
+          ) : (
+            <>
+              <Text fontSize="xl" my="1rem">
+                Hello {username}!
+              </Text>
               <Input
-                value={username}
+                maxW="16rem"
+                value={joinPartyId}
                 variant="styled"
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="enter username"
+                onChange={(e) => setJoinPartyId(e.target.value.toUpperCase())}
+                placeholder="enter party code"
                 bg="silver.100"
                 color="violet.100"
               />
-              <InputRightElement>
-                <StyledButton
-                  variant="styled_dark"
-                  size="sm"
-                  mr="1.75rem"
-                  onClick={emitUsernameToServer}
-                  bg="teal.300"
-                  color="violet.100"
-                >
-                  Set
+
+              <ButtonGroup>
+                <StyledButton variant="styled_dark" onClick={emitJoinParty}>
+                  Join Party
                 </StyledButton>
-              </InputRightElement>
-            </InputGroup>
-          ) : (
-            <>
-              {party !== null ? (
-                <>
-                  <Flex direction="row" alignItems="center" justifyContent="center">
-                    <Text>
-                      Party ID: <Text as="b">{party.partyId}</Text>
-                    </Text>
-                    <IconButton
-                      onClick={() => {
-                        copy(party.partyId)
-                        toast({
-                          title: 'Copied the party code!',
-                          status: 'info',
-                          duration: 1500,
-                          isClosable: true,
-                        })
-                      }}
-                      bg="none"
-                      _hover={{ bg: 'none' }}
-                      icon={<CopyIcon />}
-                    />
-                  </Flex>
-                  <Text>Players:</Text>
-                  <SimpleGrid columns="2" spacing="2.5">
-                    {Object.keys(party.players).map((playerId) => {
-                      let isLeader = party.partyLeader === playerId
-                      return (
-                        <UserIcon key={playerId} leader={isLeader.toString()}>
-                          {party.players[playerId]}
-                        </UserIcon>
-                      )
-                    })}
-                  </SimpleGrid>
-
-                  <ButtonGroup>
-                    <StyledButton
-                      variant="styled_dark"
-                      bg="red.800"
-                      onClick={emitLeaveParty}
-                    >
-                      Leave Party
-                    </StyledButton>
-                    {party.partyLeader === clientId && (
-                      <StyledButton
-                        variant="styled_dark"
-                        bg="teal.300"
-                        color="violet.100"
-                        onClick={emitStartGame}
-                      >
-                        Start Game
-                      </StyledButton>
-                    )}
-                  </ButtonGroup>
-                </>
-              ) : (
-                <>
-                  <Text fontSize="xl" my="1rem">
-                    Hello {username}!
-                  </Text>
-                  <Input
-                    maxW="16rem"
-                    value={joinPartyId}
-                    variant="styled"
-                    onChange={(e) => setJoinPartyId(e.target.value.toUpperCase())}
-                    placeholder="enter party code"
-                    bg="silver.100"
-                    color="violet.100"
-                  />
-
-                  <ButtonGroup>
-                    <StyledButton variant="styled_dark" onClick={emitJoinParty}>
-                      Join Party
-                    </StyledButton>
-                    <StyledButton variant="styled_light" onClick={emitCreateParty}>
-                      Create Party
-                    </StyledButton>
-                  </ButtonGroup>
-                </>
-              )}
+                <StyledButton variant="styled_light" onClick={emitCreateParty}>
+                  Create Party
+                </StyledButton>
+              </ButtonGroup>
             </>
-          )}</>
-      ) : (
-        <>
-        <div id='canvasRoot'>
-          <canvas ref={canvasRef}>
-          </canvas>
-        </div>
+          )}
         </>
       )}
     </Index>
