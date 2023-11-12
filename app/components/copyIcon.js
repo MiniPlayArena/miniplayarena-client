@@ -18,15 +18,15 @@ export function CopyIcon() {
         height="12"
         rx="1"
         stroke={colour}
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M8 6V5C8 4.44772 8.44772 4 9 4H19C19.5523 4 20 4.44772 20 5V15C20 15.5523 19.5523 16 19 16H18"
         stroke={colour}
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-dasharray="2 2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeDasharray="2 2"
       />
     </svg>
   )
