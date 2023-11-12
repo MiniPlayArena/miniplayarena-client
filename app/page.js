@@ -122,6 +122,8 @@ export default function Home() {
     var _clientId = ''
     var _partyId = ''
     var _kaboom = null
+    var _ui = null
+    let score = 0
 
     function onConnect() {
       setIsConnected(true)
@@ -271,6 +273,28 @@ export default function Home() {
         canvas: canvasRef.current,
         global: false
       })
+
+      _kaboom.loadSpriteAtlas("sprites/uno_ss.png", {
+        "card_1" : {
+          x: 0,
+          y: 0,
+          width: 84,
+          height: 129,
+          sliceX: 1,
+          sliceY: 1
+        }
+      })
+
+      _kaboom.scene("game", () => {
+        const card = _kaboom.add([
+          _kaboom.sprite("card_1"),
+          _kaboom.pos(0,0),
+          _kaboom.area()
+        ])
+      })
+
+      _kaboom.go("game")
+     
     }
 
     function onGameState(data) {
@@ -282,8 +306,9 @@ export default function Home() {
         nextPlayer: data.next_player,
       }))
       console.log(_kaboom)
-      _kaboom.add([_kaboom.text("Score: 0"),
-      _kaboom.pos(4, 4),])
+      //_kaboom.add([_kaboom.text("Score: 0"),
+      //_kaboom.pos(4, 4),])
+
     }
 
     _socket.on('connect', onConnect)
