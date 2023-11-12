@@ -29,8 +29,10 @@ const colors = {
     500: '#14b8a6',
   },
   green: {
+    400: '#4ade80',
     600: '#16a34a',
     700: '#15803d',
+    card: '#50AA44',
   },
   lime: {
     400: '#a3e635',
@@ -38,12 +40,15 @@ const colors = {
   red: {
     600: '#dc2626',
     800: '#991b1b',
+    card: '#ED1C24',
   },
   yellow: {
-    400: '#facc15'
+    400: '#facc15',
+    card: '#FFDE16',
   },
   blue: {
-    500: '#3b82f6'
+    500: '#3b82f6',
+    card: '#0072BC',
   }
 }
 

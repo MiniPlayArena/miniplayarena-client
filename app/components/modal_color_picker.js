@@ -1,4 +1,5 @@
-import { Button, ButtonGroup, Modal, ModalBody, ModalContent, ModalOverlay, useDisclosure , SimpleGrid} from '@chakra-ui/react'
+import { Button, ButtonGroup, Modal, ModalBody, ModalContent, ModalOverlay, SimpleGrid, useDisclosure } from '@chakra-ui/react'
+
 import { ChakraBox } from './animations/chakraBox'
 
 export function BasicColorPicker(props) {
@@ -21,10 +22,10 @@ export function BasicColorPicker(props) {
         <ModalContent>
           <ModalBody>
             <SimpleGrid columns='2'>
-              <ColorComponent bg='red.600' onClick={() => updateState('R')} />
-              <ColorComponent bg='blue.500' onClick={() => updateState('B')} />
-              <ColorComponent bg='green.400' onClick={() => updateState('G')} />
-              <ColorComponent bg='yellow.400' onClick={() => updateState('Y')} />
+              <ColorComponent bg='red.card' onClick={() => updateState('R')} />
+              <ColorComponent bg='blue.card' onClick={() => updateState('B')} />
+              <ColorComponent bg='green.card' onClick={() => updateState('G')} />
+              <ColorComponent bg='yellow.card' onClick={() => updateState('Y')} />
             </SimpleGrid>
           </ModalBody>
         </ModalContent>
@@ -34,22 +35,23 @@ export function BasicColorPicker(props) {
 }
 
 
-function ColorComponent(props){
-    return (
-        <ChakraBox
-            width='10rem'
-            height='10rem'
-            whileHover={{
-                opacity: 1,
-                scale: 1.05,
-                transition: { duration: 0.2 },
-              }}
-              whileTap={{
-                scale: 0.95,
-              }}
-            {...props}
-        >
+function ColorComponent(props) {
+  return (
+    <ChakraBox
+      width='10rem'
+      height='10rem'
+      borderRadius='md'
+      whileHover={{
+        opacity: 1,
+        scale: 1.05,
+        transition: { duration: 0.2 },
+      }}
+      whileTap={{
+        scale: 0.95,
+      }}
+      {...props}
+    >
 
-        </ChakraBox>
-    )
+    </ChakraBox>
+  )
 }
