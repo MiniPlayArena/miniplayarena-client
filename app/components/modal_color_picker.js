@@ -20,7 +20,7 @@ export function BasicColorPicker(props) {
         <ModalOverlay />
         <ModalContent>
           <ModalBody>
-            <SimpleGrid columns='2' spacing='0'>
+            <SimpleGrid columns='2'>
               <ColorComponent bg='red.600' onClick={() => updateState('R')} />
               <ColorComponent bg='blue.500' onClick={() => updateState('B')} />
               <ColorComponent bg='green.400' onClick={() => updateState('G')} />
@@ -40,12 +40,12 @@ function ColorComponent(props){
             width='10rem'
             height='10rem'
             whileHover={{
-                opacity: 0.9,
-                scale: 1.08,
+                opacity: 1,
+                scale: 1.05,
                 transition: { duration: 0.2 },
               }}
               whileTap={{
-                scale: 0.92,
+                scale: 0.95,
               }}
             {...props}
         >

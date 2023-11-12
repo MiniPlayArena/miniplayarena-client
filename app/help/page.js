@@ -9,14 +9,6 @@ import { useState } from 'react'
 
 export default function Page() {
 
-  const [openModal, setOpenModal] = useState(false)
-
-  function returnModal(){
-    console.log('im getting called')
-    setOpenModal(true)
-
-  }
-
   return (
     <Container
       minH={'calc(100vh)'}
@@ -52,13 +44,6 @@ export default function Page() {
       Back
       </StyledButton>
         </Link>
-
-        <StyledButton variant='styled_light' onClick={returnModal}>
-          Open Modal
-
-        </StyledButton>
-
-        {openModal && <BasicColorPicker setOpenModal={setOpenModal}/>}
   
     </Container>
   )
