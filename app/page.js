@@ -293,12 +293,19 @@ export default function Home() {
       let overlappingFactor = 4
 
       data.gameState.c_hand.map((cardId, idx) => {
-        _kaboom.add([
+        let c = _kaboom.add([
           _kaboom.sprite(cardId),
           _kaboom.pos(xPos, yPos),
           _kaboom.anchor('center'),
           _kaboom.area()
         ])
+
+        c.onHover(() => {
+          _kaboom.tween(c.pos, _kaboom.vec2(c.pos.x, c.pos.y-30), 0.5, (p) => c.pos = p, _kaboom.easings.easeOutExpo)
+        })
+        c.onHoverEnd(() => {
+          _kaboom.tween(c.pos, _kaboom.vec2(c.pos.x, yPos), 0.5, (p) => c.pos = p, _kaboom.easings.easeOutExpo)
+        })
         xPos += 80 - (overlappingFactor * numCards)
       })
     }
