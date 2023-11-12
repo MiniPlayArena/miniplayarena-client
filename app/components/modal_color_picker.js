@@ -1,36 +1,36 @@
-import { Modal, ModalBody, ModalOverlay, ModalHeader, ModalCloseButton, ModalFooter, Button, ModalContent, useDisclosure, ButtonGroup, SimpleGrid} from '@chakra-ui/react'
+import { Button, ButtonGroup, Modal, ModalBody, ModalContent, ModalOverlay, useDisclosure , SimpleGrid} from '@chakra-ui/react'
 import { ChakraBox } from './animations/chakraBox'
 
 export function BasicColorPicker(props) {
-    const { isOpen, onClose } = useDisclosure({ defaultIsOpen: true })
+  const { isOpen, onClose } = useDisclosure({ defaultIsOpen: true })
 
-    function close(){
-        props.setOpenModal(false)
-        onClose()
-    }
+  function close() {
+    props.setOpenModal(false)
+    onClose()
+  }
 
-    function updateState(value){
-        props.updateState(value)
-        close()
-    }
+  function updateState(value) {
+    props.updateState(value)
+    close()
+  }
 
-    return (
-              <>          
-                <Modal isOpen={isOpen} onClose={close}>
-                  <ModalOverlay />
-                  <ModalContent>
-                    <ModalBody>
-                       <SimpleGrid columns='2' spacing='0'>
-                        <ColorComponent bg='red.600' onClick={() => updateState('R')} />
-                        <ColorComponent bg='blue.500' onClick={() => updateState('B')} />
-                        <ColorComponent bg='green.400' onClick={() => updateState('G')} />
-                        <ColorComponent bg='yellow.400' onClick={() => updateState('Y')} />
-                       </SimpleGrid>
-                    </ModalBody>
-                  </ModalContent>
-                </Modal>
-              </>
-    )
+  return (
+    <>
+      <Modal isOpen={isOpen}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalBody>
+            <SimpleGrid columns='2' spacing='0'>
+              <ColorComponent bg='red.600' onClick={() => updateState('R')} />
+              <ColorComponent bg='blue.500' onClick={() => updateState('B')} />
+              <ColorComponent bg='green.400' onClick={() => updateState('G')} />
+              <ColorComponent bg='yellow.400' onClick={() => updateState('Y')} />
+            </SimpleGrid>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </>
+  )
 }
 
 
