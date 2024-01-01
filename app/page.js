@@ -30,7 +30,7 @@ import { io } from 'socket.io-client'
 import kaboom from 'kaboom'
 import { useToast } from '@chakra-ui/react'
 
-const URL = 'http://143.167.70.55:696/'
+const URL = 'http://127.0.0.1:1205/'
 
 const COLOURS = {
   'R': '#ED1C24',
