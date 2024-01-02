@@ -11,8 +11,7 @@ import {
 } from '@chakra-ui/react'
 
 export function GameCard(props) {
-
-  const toast = useToast();
+  const toast = useToast()
   const isDisabled = props.disabled
 
   return (
@@ -22,7 +21,7 @@ export function GameCard(props) {
       variant="outline"
       bg="silver.100"
       color="violet.100"
-      border='none'
+      border="none"
       opacity={isDisabled ? 0.5 : 1}
       maxW="auto"
       width="auto"
@@ -33,14 +32,14 @@ export function GameCard(props) {
         src={props.src}
         alt={props.alt}
         borderRadius={'md'}
-        boxSize='100px'
+        boxSize="100px"
       />
       <Stack>
         <CardBody>
-          <Heading size='md' color='violet.100'>
+          <Heading size="md" color="violet.100">
             {props.header}
           </Heading>
-          <Text color='violet.100'>{props.children}</Text>
+          <Text color="violet.100">{props.children}</Text>
         </CardBody>
       </Stack>
     </Card>

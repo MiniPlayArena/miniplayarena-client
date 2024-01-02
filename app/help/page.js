@@ -8,7 +8,6 @@ import { BasicColorPicker } from '../components/modal_color_picker'
 import { useState } from 'react'
 
 export default function Page() {
-
   return (
     <Container
       minH={'calc(100vh)'}
@@ -19,7 +18,7 @@ export default function Page() {
       flexDir="column"
       alignItems="center"
     >
-      <Heading size="2xl" my="1rem">    
+      <Heading size="2xl" my="1rem">
         MiniPlayArena
       </Heading>
       <Heading size="md" mb="1rem">
@@ -39,12 +38,9 @@ export default function Page() {
       <Text>
         These are all classic games, so the rules are the same as ever :)
       </Text>
-        <Link href="/">
-      <StyledButton variant="styled_dark">
-      Back
-      </StyledButton>
-        </Link>
-  
+      <Link href="/">
+        <StyledButton variant="styled_dark">Back</StyledButton>
+      </Link>
     </Container>
   )
 }

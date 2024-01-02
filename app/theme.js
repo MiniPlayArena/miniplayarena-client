@@ -49,7 +49,7 @@ const colors = {
   blue: {
     500: '#3b82f6',
     card: '#0072BC',
-  }
+  },
 }
 
 export const theme = extendTheme({

@@ -17,7 +17,17 @@ export function Index({ children }) {
       alignItems="center"
     >
       <Heading>MiniPlayArena</Heading>
-      <Text mb='0.5rem'>Play <Text as='b' color='lime.400'>UNO</Text> online for <Text as='b' color='yellow.400'>free with friends</Text>!</Text>
+      <Text mb="0.5rem">
+        Play{' '}
+        <Text as="b" color="lime.400">
+          UNO
+        </Text>{' '}
+        online for{' '}
+        <Text as="b" color="yellow.400">
+          free with friends
+        </Text>
+        !
+      </Text>
       {children}
     </Container>
   )

@@ -1,7 +1,6 @@
 'use client'
 
 import {
-  Box,
   ButtonGroup,
   Flex,
   IconButton,
@@ -13,30 +12,30 @@ import {
 } from '@chakra-ui/react'
 import { useEffect, useRef, useState } from 'react'
 
-import { BasicColorPicker } from './components/modal_color_picker'
-import { ChakraBox } from './components/animations/chakraBox'
-import Confetti from "react-confetti";
-import { CopyIcon } from './components/copyIcon'
-import { GameCard } from './components/card'
-import { Index } from './index'
 import { Link } from '@chakra-ui/next-js'
-import { StyledButton } from './components/button'
-import { UserIcon } from './components/userIcon'
-import { VerticalCenteredModal } from './components/modal'
-import cardsData from '../public/sprites/cards.json'
-import copy from 'copy-text-to-clipboard'
-import { games } from './components/games'
-import { io } from 'socket.io-client'
-import kaboom from 'kaboom'
 import { useToast } from '@chakra-ui/react'
+import copy from 'copy-text-to-clipboard'
+import kaboom from 'kaboom'
+import Confetti from 'react-confetti'
+import { io } from 'socket.io-client'
+import cardsData from '../public/sprites/cards.json'
+import { ChakraBox } from './components/animations/chakraBox'
+import { StyledButton } from './components/button'
+import { GameCard } from './components/card'
+import { CopyIcon } from './components/copyIcon'
+import { games } from './components/games'
+import { VerticalCenteredModal } from './components/modal'
+import { BasicColorPicker } from './components/modal_color_picker'
+import { UserIcon } from './components/userIcon'
+import { Index } from './index'
 
 const URL = 'http://127.0.0.1:1205/'
 
 const COLOURS = {
-  'R': '#ED1C24',
-  'G': '#50AA44',
-  'Y': '#FFDE16',
-  'B': '#0072BC',
+  R: '#ED1C24',
+  G: '#50AA44',
+  Y: '#FFDE16',
+  B: '#0072BC',
 }
 
 export default function Home() {
@@ -45,6 +44,7 @@ export default function Home() {
   const [clientId, setClientId] = useState(null)
   const [username, setUsername] = useState('')
   const [usernameAdded, setUsernameAdded] = useState(false)
+  const [usernameError, setUsernameError] = useState(null)
   const [party, setParty] = useState(null)
   const [joinPartyId, setJoinPartyId] = useState('')
   const [isPlaying, setIsPlaying] = useState(false)
@@ -166,7 +166,10 @@ export default function Home() {
       setUsername(window.localStorage.getItem('username'))
     }
     if (window.screen) {
-      setWindowSize({ width: window.document.body.width, height: window.document.body.height })
+      setWindowSize({
+        width: window.document.body.width,
+        height: window.document.body.height,
+      })
     }
     const _socket = io(URL)
     setSocket(_socket)
@@ -286,8 +289,9 @@ export default function Home() {
         })
       } else {
         toast({
-          title: `${data.players[Object.keys(data.players).at(-1)]
-            } joined the party!`,
+          title: `${
+            data.players[Object.keys(data.players).at(-1)]
+          } joined the party!`,
           status: 'success',
           duration: 3000,
           isClosable: true,
@@ -390,7 +394,7 @@ export default function Home() {
         _kaboom.circle(100),
         _kaboom.pos(_kaboom.center()),
         _kaboom.anchor('center'),
-        _kaboom.color(_kaboom.Color.fromHex(COLOURS[data.gameState.c_colour]))
+        _kaboom.color(_kaboom.Color.fromHex(COLOURS[data.gameState.c_colour])),
       ])
 
       var currentHand = data.gameState.c_hand
@@ -405,12 +409,21 @@ export default function Home() {
 
       if (_isWinner) {
         _kaboom.add([
-          _kaboom.text(`Congratulations! You came ${data.gameState.winners.indexOf(_clientId) + 1}/${Object.keys(data.gameState.c_player_data).length}!`, {
-            size: 24,
-            transform: (idx, ch) => ({
-              color: _kaboom.hsl2rgb((_kaboom.time() * 1 + idx * 0.1) % 1, 0.7, 0.8),
-            })
-          }),
+          _kaboom.text(
+            `Congratulations! You came ${
+              data.gameState.winners.indexOf(_clientId) + 1
+            }/${Object.keys(data.gameState.c_player_data).length}!`,
+            {
+              size: 24,
+              transform: (idx, ch) => ({
+                color: _kaboom.hsl2rgb(
+                  (_kaboom.time() * 1 + idx * 0.1) % 1,
+                  0.7,
+                  0.8,
+                ),
+              }),
+            },
+          ),
           _kaboom.pos(_kaboom.width() / 2, _kaboom.height() - 130),
           _kaboom.anchor('center'),
           _kaboom.area(),
@@ -437,7 +450,7 @@ export default function Home() {
 
       displayPickUpCard = _kaboom.add([
         _kaboom.sprite('BACK'),
-        _kaboom.pos((_kaboom.width() / 2) + 150, _kaboom.height() / 2),
+        _kaboom.pos(_kaboom.width() / 2 + 150, _kaboom.height() / 2),
         _kaboom.rotate(15),
         _kaboom.anchor('center'),
         _kaboom.area(),
@@ -454,10 +467,13 @@ export default function Home() {
       })
 
       displayPickUpCard.onHover(() => {
-        _kaboom.setCursor("pointer")
+        _kaboom.setCursor('pointer')
         _kaboom.tween(
           displayPickUpCard.pos,
-          _kaboom.vec2(displayPickUpCard.pos.x - 5, displayPickUpCard.pos.y - 5),
+          _kaboom.vec2(
+            displayPickUpCard.pos.x - 5,
+            displayPickUpCard.pos.y - 5,
+          ),
           0.5,
           (p) => (displayPickUpCard.pos = p),
           _kaboom.easings.easeOutExpo,
@@ -466,16 +482,19 @@ export default function Home() {
           15,
           10,
           0.5,
-          (p) => (displayPickUpCard.rotateTo(p)),
+          (p) => displayPickUpCard.rotateTo(p),
           _kaboom.easings.easeOutExpo,
         )
       })
 
       displayPickUpCard.onHoverEnd(() => {
-        _kaboom.setCursor("default")
+        _kaboom.setCursor('default')
         _kaboom.tween(
           displayPickUpCard.pos,
-          _kaboom.vec2(displayPickUpCard.pos.x + 5, displayPickUpCard.pos.y + 5),
+          _kaboom.vec2(
+            displayPickUpCard.pos.x + 5,
+            displayPickUpCard.pos.y + 5,
+          ),
           0.5,
           (p) => (displayPickUpCard.pos = p),
           _kaboom.easings.easeOutExpo,
@@ -484,7 +503,7 @@ export default function Home() {
           10,
           15,
           0.5,
-          (p) => (displayPickUpCard.rotateTo(p)),
+          (p) => displayPickUpCard.rotateTo(p),
           _kaboom.easings.easeOutExpo,
         )
       })
@@ -499,7 +518,7 @@ export default function Home() {
               },
             },
             transform: (idx, ch) => ({
-              scale: _kaboom.wave(1, 1.3, _kaboom.time() * 2)
+              scale: _kaboom.wave(1, 1.3, _kaboom.time() * 2),
             }),
           }),
           _kaboom.pos(_kaboom.width() / 2, _kaboom.height() - 150),
@@ -528,7 +547,7 @@ export default function Home() {
         zPos += 1
 
         c.onHover(() => {
-          _kaboom.setCursor("pointer")
+          _kaboom.setCursor('pointer')
           _kaboom.tween(
             c.pos,
             _kaboom.vec2(c.pos.x, c.pos.y - 30),
@@ -538,7 +557,7 @@ export default function Home() {
           )
         })
         c.onHoverEnd(() => {
-          _kaboom.setCursor("default")
+          _kaboom.setCursor('default')
           _kaboom.tween(
             c.pos,
             _kaboom.vec2(c.pos.x, yPos),
@@ -634,10 +653,35 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modalState, selectedCard])
 
+  useEffect(() => {
+    if (username === '') return
+
+    if (username.length < 4) {
+      setUsernameError('Your username must be at least 4 characters long')
+    } else {
+      setUsernameError(null)
+    }
+  }, [username])
+
+  if (!isConnected) {
+    return (
+      <Index>
+        <Text fontSize="xl" my="1rem">
+          Connecting to server...
+        </Text>
+      </Index>
+    )
+  }
+
   return (
     <Index>
       {isWinner && (
-        <Confetti width={windowSize.width} height={windowSize.height} recycle={false} numberOfPieces={300} />
+        <Confetti
+          width={windowSize.width}
+          height={windowSize.height}
+          recycle={false}
+          numberOfPieces={300}
+        />
       )}
       {!usernameAdded ? (
         <>
@@ -666,17 +710,27 @@ export default function Home() {
                 Set
               </StyledButton>
             </InputRightElement>
-          </InputGroup><Link href='/help' color='teal.500'>How to play</Link>
+          </InputGroup>
+          {usernameError && <Text color="red.400">{usernameError}</Text>}
+          <Link href="/help" color="teal.500">
+            How to play
+          </Link>
         </>
-
       ) : (
         <>
           {party !== null ? (
             <>
-              <Confetti width={windowSize.width} height={windowSize.height} recycle={false} />
+              <Confetti
+                width={windowSize.width}
+                height={windowSize.height}
+                recycle={false}
+              />
               <Flex direction="row" alignItems="center" justifyContent="center">
                 <Text>
-                  Party ID: <Text fontSize='lg' as="b">{party.partyId}</Text>
+                  Party ID:{' '}
+                  <Text fontSize="lg" as="b">
+                    {party.partyId}
+                  </Text>
                 </Text>
                 <IconButton
                   onClick={() => {
@@ -694,12 +748,14 @@ export default function Home() {
                 />
               </Flex>
               <Text mb="0.5rem"> Current game: {gameSelected}</Text>
-              <Flex direction='row' spacing="2.5rem">
+              <Flex direction="row" spacing="2.5rem">
                 {Object.keys(party.players).map((playerId) => {
                   let isLeader = party.partyLeader === playerId
                   let isWinner = gameState?.winners?.includes(playerId)
                   let isReversed = gameState?.reversed
-                  let playerIdsList = gameState?.playerData ? Object.keys(gameState?.playerData) : []
+                  let playerIdsList = gameState?.playerData
+                    ? Object.keys(gameState?.playerData)
+                    : []
                   let nextIdx = playerIdsList.indexOf(gameState?.currentPlayer)
                   if (isReversed) {
                     nextIdx -= 1
@@ -716,11 +772,21 @@ export default function Home() {
                     <UserIcon
                       key={playerId}
                       isPlaying={isPlaying}
-                      n_cards={gameState?.playerData ? gameState.playerData[playerId].num_cards : null}
+                      n_cards={
+                        gameState?.playerData
+                          ? gameState.playerData[playerId].num_cards
+                          : null
+                      }
                       leader={isLeader.toString()}
                       isCurrentPlayer={gameState?.currentPlayer === playerId}
-                      winnerPlace={isWinner ? gameState.winners.indexOf(playerId) + 1 : null}
-                      isNextPlayer={playerIdsList[nextIdx] === playerId && !isWinner}
+                      winnerPlace={
+                        isWinner
+                          ? gameState.winners.indexOf(playerId) + 1
+                          : null
+                      }
+                      isNextPlayer={
+                        playerIdsList[nextIdx] === playerId && !isWinner
+                      }
                     >
                       {party.players[playerId]}
                     </UserIcon>
@@ -749,7 +815,9 @@ export default function Home() {
                             return (
                               <ChakraBox
                                 key={index}
-                                onClick={() => saveGameSelected(game.name, game.disabled)}
+                                onClick={() =>
+                                  saveGameSelected(game.name, game.disabled)
+                                }
                                 whileTap={{
                                   scale: 0.9,
                                 }}
@@ -789,7 +857,9 @@ export default function Home() {
                   variant="styled_dark"
                   bg="teal.300"
                   color="violet.100"
-                  onClick={() => { window.location.reload() }}
+                  onClick={() => {
+                    window.location.reload()
+                  }}
                 >
                   Play again
                 </StyledButton>
@@ -831,7 +901,12 @@ export default function Home() {
           )}
         </>
       )}
-      {openModal && <BasicColorPicker updateState={setModalState} setOpenModal={setOpenModal} />}
+      {openModal && (
+        <BasicColorPicker
+          updateState={setModalState}
+          setOpenModal={setOpenModal}
+        />
+      )}
     </Index>
   )
 }
