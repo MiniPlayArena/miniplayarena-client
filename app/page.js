@@ -29,7 +29,7 @@ import { BasicColorPicker } from './components/modal_color_picker'
 import { UserIcon } from './components/userIcon'
 import { Index } from './index'
 
-const URL = 'http://127.0.0.1:1205/'
+const URL = process.env.REACT_APP_API_URL
 
 const COLOURS = {
   R: '#ED1C24',
@@ -171,7 +171,7 @@ export default function Home() {
         height: window.document.body.height,
       })
     }
-    const _socket = io(URL)
+    const _socket = io(URL, {transports: ['websocket', 'polling', 'flashsocket']});
     setSocket(_socket)
 
     var _clientId = ''
